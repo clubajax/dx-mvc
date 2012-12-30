@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MVC View Test</title>
+	<script>
+		dojoConfig = {
+			async:1,
+			isDebug:1,
+			packages:[
+				{name:'app', location:'../list/app'},
+				{name:'dx-mvc', location:'../dx-mvc'}
+			]
+		}
+	</script>
+	<script src='../../dojo/dojo.js'></script>
+	
+</head>
+<body>
+    <h1>MVC View Test</h1>
+	<div id='itemView'></div>
+	<script>
+		require([
+			'dojo/_base/declare',
+			'dojo/when',
+			'dx-mvc/Store',
+			'dx-mvc/Model',
+			'app/model/Item',
+			'app/view/Item',
+			'dojo/text!dx-mvc/tests/groceries.json',
+			'dx-alias/log'
+		], function(declare, when, Store, Model, ItemModel, ItemView, groceriesData, logger){
+			var log = logger('', 1);
+			
+			var store = Store.getObservable({model:ItemModel, data:JSON.parse(groceriesData)});
+			
+			
+			
+			var doTests = function(result){
+				var item = new ItemView({
+					model:	result[0]
+				}, 'itemView');
+				
+				item.model.on('change', function(evt){
+					log('on model change:', evt);
+				});
+				item.on('change', function(evt){
+					log('on item change:', evt);
+				});
+				result[0].set('label', 'Organic Eggs');
+			};
+			
+			
+			
+			when(store.query({}), doTests);
+					
+			
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MVC Data Test</title>
+	<script>
+		dojoConfig = {
+			async:1,
+			isDebug:1,
+			packages:[
+				//{name:'app', location:'../list/app'},
+				{name:'dx-mvc', location:'../dx-mvc'}
+			]
+		}
+	</script>
+	<script src='../../dojo/dojo.js'></script>
+	
+</head>
+<body>
+    <h1>MVC Data Test</h1>
+	<script>
+		require([
+			'dojo/_base/declare',
+			'dojo/when',
+			'dx-mvc/Store',
+			'dx-mvc/Model',
+			'dx-mvc/validators/Required',
+			'dojo/text!dx-mvc/tests/groceries.json',
+			'dx-alias/log'
+		], function(declare, when, Store, Model, RequiredValidator, groceriesData, logger){
+			var log = logger('', 1);
+			
+			var ItemModel = declare(Model, {
+				_schema: {
+					id: "number",
+					label: "string",
+					description: "string",
+					location:"string",
+					category:"string"
+				},
+		
+				_defaults: {
+					id: null,
+					label: "Untitled",
+					description: "",
+					location:"",
+					category:""
+				},
+		
+				_validators: {
+					label:[new RequiredValidator()]
+				}
+			});
+			
+			var store = Store.getObservable({model:ItemModel, data:JSON.parse(groceriesData)});
+			
+			var doTests = function(result){
+				log(store);
+				log('query: ', result);
+				
+				var observer = result.observe(function(object, previousIndex, newIndex){
+					log(' * change:', {previousIndex:previousIndex, newIndex:newIndex, object:object});
+				}, true);
+				
+				result[1].set('label', 'Green Grapes');
+				log('modified result:', result[1]);
+				store.put(result[1]);
+				
+				var obj = {
+					id:11,
+					label:"",
+					description:"big ones",
+					location:"7 Eleven",
+					category:"fruit"
+				};
+				var m = store.createModel();
+				m.set(obj);
+				log('save...');
+				
+				if(!m.save()){
+					log('no save');
+					var errs = m.getErrors();
+					log('errors:', errs);
+					for(var key in errs){
+						errs[key].forEach(function(e){
+							log(' err: [', key, '] ', e.message);	
+						})
+					}
+				}
+				
+				return;
+				
+				setTimeout(function(){
+					store.add(m);
+				}, 300);
+				
+				store.remove(1);
+				
+				// return all
+				// kills observable
+				var all = store.query(null);
+				log('all',all);
+				
+				
+				var sorted = store.query(null, {sort:[{attribute:'label'}]});
+				log('sorted',sorted);
+				var observer = sorted.observe(function(object, previousIndex, newIndex){
+					log(' * sorted change:', {previousIndex:previousIndex, newIndex:newIndex, object:object});
+				}, true);
+				
+				sorted[0].label = 'Tin Foil';
+				store.put(sorted[0]);
+				
+			};
+			
+			when(store.query({}), doTests);
+					
+			
+		});
+	</script>
+</body>
+</html>
