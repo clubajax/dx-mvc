@@ -17,19 +17,23 @@
 </head>
 <body>
     <h1>MVC View Test</h1>
-	<div id='itemView'></div>
+	<form id='formNode'>
+		<label><span></span>Label:</span><input name='label' /></label>
+		<label><span></span>Description:</span><input name='description' /></label>
+		<label><span></span>Location:</span><input name='location' /></label>
+		<label><span></span>Category:</span><input name='category' /></label>
+	</form>
 	<script>
 		require([
 			'dojo/_base/declare',
 			'dojo/when',
 			'dx-mvc/Store',
 			'dx-mvc/Model',
-			'dx-mvc/ModelledUIMixin',
+			'dx-mvc/ModelledForm',
 			'dx-mvc/validators/Required',
-			'dx-ui/Base',
 			'dojo/text!dx-mvc/tests/groceries.json',
 			'dx-alias/log'
-		], function(declare, when, Store, Model, ModelledUIMixin, RequiredValidator, Base, groceriesData, logger){
+		], function(declare, when, Store, Model, ModelledForm, RequiredValidator, groceriesData, logger){
 			var log = logger('', 1);
 			
 			var ItemModel = declare(Model, {
@@ -56,43 +60,20 @@
 					
 			var store = Store.getObservable({model:ItemModel, data:JSON.parse(groceriesData)});
 			
-			var template =	"<div class='item'>" +
-								"<div><span data-bind='label' class='label'></span></div>" +
-							"</div>";
-							
-			var ItemView = declare('dx-mvc.Item', [Base, ModelledUIMixin], {
-				id:null,
-				label:null,
-				model:null,
-				template: template
-			});
-			
 			var doTests = function(result){
 				var itemData = result[0];
-				var itemView = new ItemView({
-					model:	itemData
-				}, 'itemView');
+				log('doTests itemData', itemData);
+				var mform = new ModelledForm({model:itemData}, 'formNode');
 				
 				itemData.on('change', function(evt){
 					log('on model change:', evt);
-				});
-				
-				itemView.model.on('change', function(evt){
-					log('on item model change:', evt);
-				});
-				
-				itemView.on('change', function(evt){
-					log('on item change:', evt);
 				});
 				
 				setTimeout(function(){
 					log('set item.label');
 					itemData.set('label', 'Organic Eggs');
 				}, 500);
-			
 			};
-			
-			
 			
 			when(store.query({}), function(result){
 				setTimeout(function(){

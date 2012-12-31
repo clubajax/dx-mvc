@@ -5,5 +5,40 @@
 		"decription":"",
 		"location":"Kroger",
 		"category":"fruit"
+	},
+	{
+		"id":2,
+		"label":"Peaches",
+		"decription":"Georgian organic",
+		"location":"Kroger",
+		"category":"fruit"
+	},
+	{
+		"id":3,
+		"label":"Potatoes",
+		"decription":"Russett",
+		"location":"Target",
+		"category":"vegetables"
+	},
+	{
+		"id":4,
+		"label":"Mushrooms",
+		"decription":"Shitake",
+		"location":"Target",
+		"category":"vegetables"
+	},
+	{
+		"id":5,
+		"label":"French Fries",
+		"decription":"Ore Ida",
+		"location":"Market Street",
+		"category":"frozen foods"
+	},
+	{
+		"id":6,
+		"label":"Aluminum Foil",
+		"decription":"",
+		"location":"Kroger",
+		"category":"dry goods"
 	}
 ]

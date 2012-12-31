@@ -44,7 +44,8 @@ define([
 
 			var returnValue = this.inherited(arguments);
 			when(returnValue).then(function () {
-				object.commit();
+				console.info('todo: item.commit');
+				//object.commit();
 			});
 			return returnValue;
 		},

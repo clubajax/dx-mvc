@@ -56,14 +56,15 @@
 			var doTests = function(result){
 				log(store);
 				log('query: ', result);
+				var item = result[0];
 				
 				var observer = result.observe(function(object, previousIndex, newIndex){
 					log(' * change:', {previousIndex:previousIndex, newIndex:newIndex, object:object});
 				}, true);
 				
-				result[1].set('label', 'Green Grapes');
-				log('modified result:', result[1]);
-				store.put(result[1]);
+				item.set('label', 'Green Grapes');
+				log('modified result:', item);
+				store.put(item);
 				
 				var obj = {
 					id:11,
@@ -112,7 +113,11 @@
 				
 			};
 			
-			when(store.query({}), doTests);
+			when(store.query({}), function(result){
+				setTimeout(function(){
+					doTests(result)
+				}, 1);
+			});
 					
 			
 		});
