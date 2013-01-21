@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MVC Validation Test</title>
+	<script>
+		dojoConfig = {
+			async:1,
+			isDebug:1,
+			packages:[
+				//{name:'app', location:'../list/app'},
+				{name:'dx-mvc', location:'../dx-mvc'}
+			]
+		}
+	</script>
+	<script src='../../dojo/dojo.js'></script>
+	
+</head>
+<body>
+    <h1>MVC Validation Test</h1>
+	<script>
+		require([
+			'doh',
+			'dojo/_base/declare',
+			'dojo/when',
+			'dx-mvc/Store',
+			'dx-mvc/Model',
+			'dx-mvc/validators/Required',
+			'dojo/text!dx-mvc/tests/groceries.json',
+			'dx-alias/log'
+		], function(doh, declare, when, Store, Model, RequiredValidator, groceriesData, logger){
+			
+			var log = logger('', 1);
+			var line = logger(' --- ', 1);
+			
+			var checkDesc = function(value){
+				// test a sentence with a least 3 words
+				var regexp = /[\s|\n]/gm;
+				var result = value.match(regexp);
+				return result && result.length > 1;
+			};
+			
+			var ItemModel = declare(Model, {
+				_schema: {
+					id: Model.NUMBER,
+					amount: Model.NUMBER,
+					label: Model.STRING,
+					phone:Model.STRING,
+					description: Model.STRING,
+					location:Model.STRING,
+					category:Model.STRING
+				},
+		
+				_defaults: {
+					id: null,
+					// amount: 0, since this has a min validator, we don't want this being zero!
+					label: "Untitled",
+					description: "",
+					location:"",
+					category:""
+				},
+		
+				_validators: {
+					label:{required:true, min:4, max:12},
+					phone:{regexp:/\d{3}[\-\.\\\/]?\d{3}[\-\.\\\/]?\d{4}/},
+					amount:{min:4, max:12},
+					location:{options:['Kroger', 'Market Street', 'Whole Foods']},
+					description:{custom:checkDesc}
+				}
+			});
+			var store = Store.getObservable({model:ItemModel, data:JSON.parse(groceriesData)});
+			var items;
+			
+			var logStore = function(){
+				log(store);
+				log('query: ', items); // all items
+			};
+			
+			
+			
+			var doTests = function(result){
+				
+				var logValid = function(item){
+					log('item.isValid()', item.isValid());
+					var e = item.getErrors();
+					if(e){
+						for(var nm in e){
+							log('    ERROR', nm, e[nm]);
+						}
+					}
+				};
+				
+				var tests = {
+					
+					'[custom]': function(t){
+						log('CUSTOM-DESCRIPTION');
+						var id = 15;
+						var item = store.addModelled({
+							id:id,
+							label:'food stuff',
+							description:'Mike was'
+						});
+						item.save();
+						logValid(item);
+						t.f(!!item.isValid(), 'custom-description should not be valid');
+						item.set('description', 'Mike was here');
+						item.save();
+						logValid(item);
+						t.t(!!item.isValid(), 'custom-description should be valid');
+					},
+					
+					'[regexp]': function(t){
+						log('REGEXP-PHONE');
+						var id = 14;
+						var item = store.addModelled({
+							id:id,
+							label:'food stuff',
+							phone:'222-222-222'
+						});
+						item.save();
+						logValid(item);
+						t.f(!!item.isValid(), 'regexp-phone should not be valid');
+						item.set('phone', '222-222-2222');
+						item.save();
+						logValid(item);
+						t.t(!!item.isValid(), 'regexp-phone should be valid');
+					},
+					
+					'[options]': function(t){
+						log('OPTIONS-LOCATION');
+						var id = 13;
+						var item = store.addModelled({
+							id:id,
+							label:'food stuff',
+							location:'Walmart'
+						});
+						item.save();
+						logValid(item);
+						t.f(!!item.isValid(), 'options-location should not be valid');
+						item.set('location', 'Kroger');
+						item.save();
+						logValid(item);
+						t.t(!!item.isValid(), 'options-location should be valid');
+					},
+					
+					'[required label]': function(t){
+						log('REQUIRED-LABEL');
+						var id = 11;
+						var item = store.addModelled({
+							id:id,
+							label:''
+						});
+						item.save();
+						logValid(item);
+						t.f(!!item.isValid(), 'required-label should not be valid');
+						item.set('label', 'eggs');
+						item.save();
+						logValid(item);
+						t.t(!!item.isValid(), 'required-label should be valid');
+					},
+					
+					'[min label]': function(t){
+						log('MIN-LABEL');
+						var id = 12;
+						var item = store.addModelled({
+							id:id,
+							label:'fo'
+						});
+						item.save();
+						logValid(item);
+						t.f(!!item.isValid(), 'min-label should not be valid');
+						log('MIN-LABEL - VALID');
+						item.set('label', 'eggss');
+						item.save();
+						logValid(item);
+						t.t(!!item.isValid(), 'min-label should be valid');
+					}
+				};
+				doh.register("tests.model", tests);
+				doh.run();
+				
+			};
+			
+			// first get is async
+			when(store.query({}), function(result){
+				// timer breaks out of promise error capture
+				setTimeout(function(){
+					doTests(result)
+				}, 1);
+			});
+					
+			
+		});
+	</script>
+</body>
+</html>

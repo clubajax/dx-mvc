@@ -23,6 +23,13 @@ define([
 			return model;
 		},
 		
+		addModelled: function(obj){
+			var model = this.createModel();
+			model.set(obj);
+			this.add(model);
+			return this.get(obj.id); // Item (if id provided)
+		},
+		
 		setData: function (data) {
 			//	summary:
 			//		Ensures objects set in the store are of the correct type
@@ -31,7 +38,7 @@ define([
 			this.inherited(arguments);
 			
 		},
-
+		
 		put: function (object) {
 			//	summary:
 			//		Ensures objects put to the store are of the correct type,

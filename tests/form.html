@@ -2,6 +2,19 @@
 <html lang="en">
 <head>
     <title>MVC View Test</title>
+	<style>
+		body{
+			font-family: sans-serif;
+		}
+		label{
+			display: block;
+		}
+		label span{
+			display: inline-block;
+			width: 90px;
+			font-size: 0.8em;
+		}
+	</style>
 	<script>
 		dojoConfig = {
 			async:1,
@@ -18,45 +31,27 @@
 <body>
     <h1>MVC View Test</h1>
 	<form id='formNode'>
-		<label><span></span>Label:</span><input name='label' /></label>
-		<label><span></span>Description:</span><input name='description' /></label>
-		<label><span></span>Location:</span><input name='location' /></label>
-		<label><span></span>Category:</span><input name='category' /></label>
+		<label><span>Label:</span><input name='label' /></label>
+		<label><span>Description:</span><input name='description' /></label>
+		<label><span>Location:</span><input name='location' /></label>
+		<label><span>Category:</span><input name='category' /></label>
+		<label><span>Bulk:</span><input name='bulk' type='checkbox'/></label>
+		
+		<label><span>Monday:</span><input name='days' type='radio' value='monday'/></label>
+		<label><span>Wednesday:</span><input name='days' type='radio' value='wednesday'/></label>
+		<label><span>Friday:</span><input name='days' type='radio' value='friday'/></label>
 	</form>
 	<script>
 		require([
 			'dojo/_base/declare',
 			'dojo/when',
 			'dx-mvc/Store',
-			'dx-mvc/Model',
+			'dx-mvc/tests/ItemModel',
 			'dx-mvc/ModelledForm',
-			'dx-mvc/validators/Required',
 			'dojo/text!dx-mvc/tests/groceries.json',
 			'dx-alias/log'
-		], function(declare, when, Store, Model, ModelledForm, RequiredValidator, groceriesData, logger){
+		], function(declare, when, Store, ItemModel, ModelledForm, groceriesData, logger){
 			var log = logger('', 1);
-			
-			var ItemModel = declare(Model, {
-				_schema: {
-					id: "number",
-					label: "string",
-					description: "string",
-					location:"string",
-					category:"string"
-				},
-		
-				_defaults: {
-					id: null,
-					label: "Untitled",
-					description: "",
-					location:"",
-					category:""
-				},
-		
-				_validators: {
-					label:[new RequiredValidator()]
-				}
-			});
 					
 			var store = Store.getObservable({model:ItemModel, data:JSON.parse(groceriesData)});
 			
@@ -69,10 +64,18 @@
 					log('on model change:', evt);
 				});
 				
+				return;
 				setTimeout(function(){
 					log('set item.label');
-					itemData.set('label', 'Organic Eggs');
-				}, 500);
+					itemData.set('label', 'Grapes');
+					setTimeout(function(){
+						log('set item.object');
+						itemData.set({
+							'label':'Organic Eggs',
+							'category':'dairy'
+						});
+					}, 750);
+				}, 750);
 			};
 			
 			when(store.query({}), function(result){

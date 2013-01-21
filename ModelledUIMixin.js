@@ -18,13 +18,14 @@ define([
 			}
 		},
 		set: function(key, value, setFromModel){
-			log('SET', key);
+			
 			if(key === 'model'){
 				return value;
 			}
 			if(typeof key === 'object'){
 				return this.inherited(arguments);
 			}
+			log('SET', key);
 			var oldvalue = this.get(key);
 			if(this.model && !setFromModel && key in this.model){
 				this.model.set(key, value);

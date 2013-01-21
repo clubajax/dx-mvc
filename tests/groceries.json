@@ -2,43 +2,62 @@
 	{
 		"id":1,
 		"label":"Oranges",
-		"decription":"",
+		"description":"Sunkist",
 		"location":"Kroger",
-		"category":"fruit"
+		"category":"fruit",
+		"bulk":true,
+		"monday":false,
+		"wednesday":false,
+		"friday":true,
+		"day":[
+			{"monday":false},
+			{"wednesday":false},
+			{"friday":true}
+		],
+		"days":{
+			"monday":false,
+			"wednesday":false,
+			"friday":true
+		}
 	},
 	{
 		"id":2,
 		"label":"Peaches",
-		"decription":"Georgian organic",
+		"description":"Georgian organic",
 		"location":"Kroger",
-		"category":"fruit"
+		"category":"fruit",
+		"bulk":false
 	},
 	{
 		"id":3,
 		"label":"Potatoes",
-		"decription":"Russett",
+		"description":"Russett",
 		"location":"Target",
-		"category":"vegetables"
+		"category":"vegetables",
+		"bulk":false
 	},
 	{
 		"id":4,
 		"label":"Mushrooms",
-		"decription":"Shitake",
+		"description":"Shitake",
 		"location":"Target",
-		"category":"vegetables"
+		"category":"vegetables",
+		"bulk":false
 	},
 	{
 		"id":5,
 		"label":"French Fries",
-		"decription":"Ore Ida",
+		"description":"Ore Ida",
 		"location":"Market Street",
-		"category":"frozen foods"
+		"category":"frozen foods",
+		"bulk":false
 	},
 	{
 		"id":6,
 		"label":"Aluminum Foil",
-		"decription":"",
+		"description":"",
 		"location":"Kroger",
-		"category":"dry goods"
+		"category":"dry goods",
+		"bulk":false
 	}
 ]

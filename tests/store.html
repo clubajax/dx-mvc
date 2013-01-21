@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MVC Store Test</title>
+	<script>
+		dojoConfig = {
+			async:1,
+			isDebug:1,
+			packages:[
+				//{name:'app', location:'../list/app'},
+				{name:'dx-mvc', location:'../dx-mvc'}
+			]
+		}
+	</script>
+	<script src='../../dojo/dojo.js'></script>
+	
+</head>
+<body>
+    <h1>MVC Store Test</h1>
+	<p>Results in console</p>
+	<script>
+		require([
+			'doh',
+			'dojo/_base/declare',
+			'dojo/when',
+			'dx-mvc/Store',
+			'dx-mvc/Model',
+			'dx-mvc/validators/Required',
+			'dojo/text!dx-mvc/tests/groceries.json',
+			'dx-alias/log'
+		], function(doh, declare, when, Store, Model, RequiredValidator, groceriesData, logger){
+			
+			var log = logger('', 1);
+			var line = logger(' --- ', 1);
+			
+			var ItemModel = declare(Model, {
+				_schema: {
+					id: "number",
+					amount: "number",
+					label: "string",
+					description: "string",
+					location:"string",
+					category:"string"
+				}
+			});
+			var store = Store.getObservable({model:ItemModel, data:JSON.parse(groceriesData)});
+			var items;
+			
+			var logStore = function(){
+				log(store);
+				log('query: ', items); // all items
+			};
+			
+			var createObserver = function(query){
+				// create a query so store can be observed
+				var observer = query.observe(function(object, previousIndex, newIndex){
+					var changes = {previousIndex:previousIndex, newIndex:newIndex, object:object};
+					log(' * changed:', changes);
+					
+				}, true);
+			};
+			
+			var doTests = function(result){
+				
+				var tests = {
+					
+					'[put]': function(t){
+						var label = 'Green Grapes';
+						var item = store.get(1);
+						item.set('label', label);
+						store.put(item);
+						var mod = store.get(1);
+						t.t(mod.label === label, 'modified item label');
+					},
+					
+					'[add]': function(t){
+						var
+							id = 11,
+							label = 'Added Item',
+							obj = {
+								id:id,
+								amount:1,
+								label:label,
+								description:"big ones",
+								location:"7 Eleven",
+								category:"fruit"
+							};
+						var m = store.createModel();
+						m.set(obj);
+						store.add(m);
+						var item = store.get(id);
+						t.t(!!item, 'item add');
+						t.t(item.label === label, 'added item label');
+					},
+					
+					'[remove]': function(t){
+						var id = 1;
+						store.remove(id);
+						var item = store.get(id);
+						t.t(!item, 'item remove');
+					},
+					
+					'[sorted]':function(t){
+						var sorted = store.query(null, {sort:[{attribute:'label'}]});
+						var r = true, last = '';
+						sorted.forEach(function(m){
+							if(m.label < last){
+								r = false;
+							}
+							last = m.label
+						});
+						t.t(r);
+					},
+					
+					'[observe query]':function(t){
+						var query = store.query(null, {sort:[{attribute:'label'}]});
+						var idx = 0, label = 'Zipper';
+						var h = query.observe(function(object, previousIndex, newIndex){
+							var changes = {previousIndex:previousIndex, newIndex:newIndex, object:object};
+							log(' * changed:', changes);
+							t.t(object.label === label, 'changed object label');
+							t.f(previousIndex, newIndex, 'sort changed');
+							// remove observer for future tests
+							h.remove();
+						}, true);
+								
+						query[idx].label = label;
+						store.put(query[0]);
+					},
+					
+					'[get]': function(t){
+						var item = store.get(2);
+						log('item', item);
+						t.t(!!item, 'get item');
+					},
+					
+					'[catch add existing]':function(t){
+						var q = store.query(null);
+						var item = store.get(2);
+						try{
+							store.addModelled({id:item.id});
+							t.t(0, 'add existing not caught');
+						}catch(e){
+							log('squelched add existing');
+							t.t(1, 'add existing caught');	
+						}
+						
+					}
+				};
+				doh.register("tests.model", tests);
+				doh.run();
+				
+			};
+			
+			// first get is async
+			when(store.query({}), function(result){
+				// timer breaks out of promise error capture
+				setTimeout(function(){
+					items = result;
+					doTests(result);
+				}, 1);
+			});
+					
+			
+		});
+	</script>
+</body>
+</html>
