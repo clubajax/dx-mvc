@@ -7,7 +7,7 @@ define([
 	'dx-alias/log'
 ], function (declare, Stateful, Evented, when, lang, logger) {
 	
-	var log = logger('MDL', 0);
+	var log = logger('MDL', 1);
 	
 	var isNull = function(value){
 		// null, undefined, and '' are all isNull
@@ -76,20 +76,33 @@ define([
 	var Model = declare([Stateful, Evented], {
 		//	summary:
 		//		A base class for data models.
-		_errors: {},
-		_schema: {},
-		_defaults: {},
-		_committedValues: {},
+		_errors: null,
+		_schema: null,
+		_defaults: null,
+		_committedValues: null,
 		
 		// conditionals that trigger virtual properties
-		_behaviors:{},
+		_behaviors:null,
+		
 		
 		store: null,
 
 		constructor: function (params) {
 			this._errors = {};
 			lang.mix(this, this._defaults);
-			this._committedValues = lang.mix({}, this._defaults, params);
+			if(params && params._behaviors){
+				lang.mix(this._behaviors, params._behaviors);
+			}else{
+				delete this._behaviors;
+			}
+			//this._committedValues = lang.mix({}, [this._defaults, params]);
+		},
+		
+		postscript: function(params){
+			this.inherited(arguments);
+			// do stuff after getters and setters
+			this._parseBehaviors();
+			this._initialized = true;
 		},
 
 		save: function (skipValidation) {
@@ -158,8 +171,88 @@ define([
 					oldvalue:oldvalue,
 					key:key
 				});
+				
+				if(this._keyBehaviors[key]){
+					this._keyBehaviors[key].forEach(function(propSettingObj){
+						var prop, propValue;
+						for(var p in propSettingObj){
+							prop = p;
+							propValue = propSettingObj[p];
+						}
+						this.emit('behavior', {
+							value:value,
+							oldvalue:oldvalue,
+							key:key,
+							property:prop,
+							setting:propValue
+						});		
+					}, this);
+					
+				}
+			}
+			
+			if(!this.radiosBlocked && this._initialized && this._behaviors && key in this._behaviors){
+				console.log('    radios:', key, this._behaviors[key], 'isRadio:', !!this._radios._keys[key]);
+				if(this._radios._keys[key]){
+					this.radiosBlocked = 1;
+					this._setRadios(key, value);
+					this.radiosBlocked = 0;
+				}
 			}
 			return value;
+		},
+		
+		_setRadios: function(key, value){
+			var name = this._radios._keys[key];
+			log('  set radios', name);
+			this._radios[name].forEach(function(k){
+				if(k !== key){
+					log('  set radio', k, name);
+					this.set(k, !value);
+				}
+			}, this);
+		},
+		
+		_addRadio: function(key, name){
+			if(!this._radios){
+				this._radios = {
+					_keys:{}	
+				};	
+			}
+			this._radios[name] = this._radios[name] || [];
+			this._radios[name].push(key);
+			this._radios._keys[key] = name;
+			
+			log('   radios', this._radios);
+		},
+		
+		_addBehavior: function(affectedKey, uiProperty, keyToWatch){
+			log('_addBehavior', affectedKey, uiProperty, keyToWatch);
+			if(!this._keyBehaviors){
+				this._keyBehaviors = {};
+			}
+			
+			this._keyBehaviors[keyToWatch] = this._keyBehaviors[keyToWatch] || [];
+			var o = {};
+			o[affectedKey] = uiProperty;
+			this._keyBehaviors[keyToWatch].push(o);
+		},
+		
+		_parseBehaviors: function(){
+				console.log('    parse behavior:', this._behaviors);
+				for(var key in this._behaviors){
+					var keyBehaviors = this._behaviors[key];
+					for(var beKey in keyBehaviors){
+						console.log('        beKey', beKey, keyBehaviors[beKey]);
+						if(beKey === Model.RADIO){
+							this._addRadio(key, keyBehaviors[beKey]);	
+						}
+						else {
+							this._addBehavior(key, beKey, keyBehaviors[beKey]);
+						}
+					}
+				}
+			
 		},
 		
 		validate: function ( ) {
@@ -167,11 +260,11 @@ define([
 
 			var validators = this._validators;
 			for (var key in validators) {
-				log('  validate:', key);
+				//log('  validate:', key);
 
 				var value = this.get(key);
 				var keyValidators = validators[key];
-				log('  keyValidators:', keyValidators);
+				//log('  keyValidators:', keyValidators);
 				
 				if(keyValidators instanceof Object){
 					for(var validatorType in keyValidators){
@@ -211,6 +304,8 @@ define([
 	Model.STRING = 'string';
 	Model.BOOLEAN = 'boolean';
 	Model.FUNCTION = 'function';
+	
+	Model.RADIO = 'radio';
 	
 	return Model;
 });

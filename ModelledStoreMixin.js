@@ -12,20 +12,20 @@ define([
 		//		the parent store into actual JavaScript objects.
 		model: null,
 
-		createModel: function () {
+		createModel: function (obj) {
 			var Model = this.model;
 			if (!Model) {
 				throw new Error("Cannot create new model");
 			}
-
-			var model = new Model();
+			console.log('INSTANCE');
+			var model = new Model(obj);
 			model.store = this;
 			return model;
 		},
 		
 		addModelled: function(obj){
-			var model = this.createModel();
-			model.set(obj);
+			var model = this.createModel(obj);
+			//model.set(obj);
 			this.add(model);
 			return this.get(obj.id); // Item (if id provided)
 		},
@@ -51,7 +51,7 @@ define([
 
 			var returnValue = this.inherited(arguments);
 			when(returnValue).then(function () {
-				console.info('todo: item.commit');
+				//console.info('todo: item.commit');
 				//object.commit();
 			});
 			return returnValue;

@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MVC Behavior Test</title>
+	<script>
+		dojoConfig = {
+			async:1,
+			isDebug:1,
+			packages:[
+				//{name:'app', location:'../list/app'},
+				{name:'dx-mvc', location:'../dx-mvc'}
+			]
+		}
+	</script>
+	<script src='../../dojo/dojo.js'></script>
+	
+</head>
+<body>
+    <h1>MVC Behavior Test</h1>
+	<p>Tests are in the console</p>
+	<script>
+		require([
+			'doh',
+			'dojo/_base/declare',
+			'dojo/when',
+			'dx-mvc/Store',
+			'dx-mvc/Model',
+			'dx-mvc/validators/Required',
+			'dojo/text!dx-mvc/tests/groceries.json',
+			'dx-alias/log'
+		], function(doh, declare, when, Store, Model, RequiredValidator, groceriesData, logger){
+			
+			var log = logger('', 1);
+			var line = logger(' --- ', 1);
+			var items, store;
+			var logStore = function(){
+				log(store);
+				log('query: ', items); // all items
+			};
+			
+			var ItemModel = declare(Model, {
+				_schema: {
+					id: Model.NUMBER,
+					amount: Model.NUMBER,
+					label: Model.STRING,
+					phone:Model.STRING,
+					description: Model.STRING,
+					location:Model.STRING,
+					category:Model.STRING,
+					hideDesc:Model.BOOLEAN,
+					showDesc:Model.BOOLEAN,
+					enableLabel:Model.BOOLEAN,
+					disableLabel:Model.BOOLEAN
+				},
+		
+				_defaults: {
+					id: null,
+					// amount: 0, since this has a min validator, we don't want this being zero!
+					label: "Untitled",
+					description: "",
+					location:"",
+					category:""
+				},
+				
+				_behaviors: {
+					// link
+					// toggle
+					// radio
+					// disabled
+					// hidden
+					hideDesc:{ radio:'myRadios' },
+					showDesc:{ radio:'myRadios' },
+					enableLabel:{ radio:'labelRadios' },
+					disableLabel:{ radio:'labelRadios' },
+					description:{ visible:'showDesc' },
+					label:{ enabled:'enableLabel' }
+				},
+		
+				_validators: {
+				//	label:{required:true, min:4, max:12},
+				//	phone:{regexp:/\d{3}[\-\.\\\/]?\d{3}[\-\.\\\/]?\d{4}/},
+				//	amount:{min:4, max:12},
+				//	location:{options:['Kroger', 'Market Street', 'Whole Foods']},
+				//	description:{custom:checkDesc}
+				}
+			});
+			store = Store.getObservable({model:ItemModel/*, data:JSON.parse(groceriesData)*/});		
+			
+			var doTests = function(result){
+				
+				var logValid = function(item){
+					log('item.isValid()', item.isValid());
+					var e = item.getErrors();
+					if(e){
+						for(var nm in e){
+							log('    ERROR', nm, e[nm]);
+						}
+					}
+				};
+				
+				var tests = {
+					
+					'[radios]': function(t){
+						log('RADIOS');
+						var item = store.addModelled({
+							id:15,
+							label:'food stuff',
+							description:'Mike was here',
+							hideDesc:false,
+							showDesc:true,
+							enableLabel:true,
+							disableLabel:false
+						});
+						
+						var eventCount = 0;
+						var handle1 = item.on('change', function(evt){
+							if(evt.key === 'showDesc'){
+								t.f(item.get('showDesc'), 'set showDesc');
+							}
+							else if(evt.key === 'hideDesc'){
+								t.t(item.get('hideDesc'), 'set hideDesc');
+							}
+							else if(evt.key === 'enableLabel'){
+								t.f(item.get('enableLabel'), 'set enableLabel');
+							}
+							else if(evt.key === 'disableLabel'){
+								t.t(item.get('disableLabel'), 'set disableLabel');
+							}
+							eventCount++;
+							log('*** item change', eventCount, evt);
+						});
+						
+						var handle2 = item.on('behavior', function(evt){
+							if(evt.key === 'enableLabel'){
+								t.t(evt.value === false && evt.property === 'label' && evt.setting === 'enabled');
+							}
+							else if(evt.key === 'showDesc'){
+								t.t(evt.value === false && evt.property === 'description' && evt.setting === 'visible');
+							}
+							eventCount++;
+							log('*** item behavior', eventCount, evt);
+						}); 
+						
+						log('set desc');
+						item.set('hideDesc', true);
+						item.set('enableLabel', false);
+						log('desc has been set');
+						log('events:', eventCount);
+						t.t(eventCount === 6, '6 events fired');
+						handle1.remove();
+						handle2.remove();
+					}
+				};
+				doh.register("tests.model", tests);
+				doh.run();
+				
+			};
+			
+			// first get is async
+			when(store.query({}), function(result){
+				// timer breaks out of promise error capture
+				setTimeout(function(){
+					doTests(result)
+				}, 1);
+			});
+					
+			
+		});
+	</script>
+</body>
+</html>
