@@ -22,6 +22,11 @@ define([
 			return isInput(node) &&
 				node.type.toLowerCase() === 'text';
 		},
+		
+		isTextareaElement = function(node){
+			return isInput(node) &&
+				node.tagName.toLowerCase() === 'textarea';
+		},
 	
 		isCheckboxElement = function(node){
 			return isInput(node) && node.type.toLowerCase() === 'checkbox';
@@ -33,6 +38,14 @@ define([
 		
 		isNodeList = function(node){
 			return !!node && node.toString().indexOf('NodeList') > -1;
+		},
+		
+		getStyleValue = function(styleProperty, bool){
+			// convert bool into a proper style value
+			return {
+				visibility: bool ? 'visible' : 'hidden',
+				display: bool ? '' : 'none'
+			}[styleProperty];
 		};
 	
 	return declare('dx-mvc.ModelledForm', ModelledUIMixin, {
@@ -43,23 +56,31 @@ define([
 			this.domNode = typeof node == 'string' ? document.getElementById(node) : node;
 			this._handles = [];
 			this.setModelValues();
+			this.setModelBehavior();
 			
-			// if not Base.....
+			// if not Base...
 			this.postMixInProperties();
 		},
 		
 		bindElement: function(node, key, value){
-			log('bindElement', isNodeList(node));
+			var self = this;
 			if(isNodeList(node)){
 				log('NodeList');
 				for(var i=0; i<node.length; i++){
-					log('   bind', node[i].value);
 					this.bindElement(node[i], key, node[i].value);
 				}
-			}else if(isRadioElement(node) || isCheckboxElement(node)){
+			}
+			else if(isRadioElement(node) || isCheckboxElement(node)){
 				log('RADIO!!!')
-				this._handles.push(on(node, 'click', function(){
-					log('CHECK!', key, value);	
+				this._handles.push(on(node, 'click', function(evt){
+					log('CHECK!', key, evt.target.checked);
+					self.model.set(key, true);
+				}));
+			}
+			else if(isTextElement(node)){
+				this._handles.push(on(node, 'change', function(evt){
+					log('CHANGE!', key, evt.target.value);
+					self.model.set(key, true);
 				}));
 			}
 		},
@@ -74,9 +95,26 @@ define([
 			}
 		},
 		
+		getRadio: function(key){
+			if(!this._radios){
+				this._radios = {};
+				var nodes = this.domNode.querySelectorAll('input[type="radio"]');
+				console.log('this._radios',this._radios);
+				for(var i = 0; i < nodes.length; i++){
+					this._radios[nodes[i].value] = nodes[i];	
+				}
+			}
+			return this._radios[key];
+		},
+		
+		getElement: function(key){
+			return this.domNode[key] || this.getRadio(key);
+		},
+		
 		setElementValue: function(key){
-			var element = this.domNode[key];
-			//console.log('KEY', key, element);
+			var element = this.getElement(key);
+			log('KEY', key, element);
+			
 			if(element){
 				var value = this.model.get(key);
 					
@@ -84,7 +122,6 @@ define([
 					for(var i=0; i<element.length; i++){
 						element[i].checked = element[i].value === value;
 					}
-					//element.value = 'monday'
 				}else if(typeof element !== 'string'){
 					//log('set element', key, value);
 					if(isCheckboxElement(element)){
@@ -97,9 +134,41 @@ define([
 				}
 				
 			}else{
-				log('No element for ', key);
+				log(' ---- No element for ', key);
 			}
 			return element;
+		},
+		
+		onBehavior: function(evt){
+			var element = this.getElement(evt.property);
+			if(!!evt.useParent){
+				element = element.parentNode;
+			}
+			if(element){
+				var setting = evt.setting;
+				// check if attr or style
+				if(evt.setting in element){
+					element[evt.setting] = evt.value;	
+				}
+				else if(evt.setting in element.style){
+					var value = getStyleValue(evt.setting, evt.value);
+					log('SET STYLE', evt.setting, value);
+					element.style[evt.setting] = value;
+				}
+				else{
+					console.warn('unrecognized node behavior: ', evt.setting, element);	
+				}
+				
+				
+			}
+		},
+		
+		setModelBehavior: function(){
+			var self = this;
+			this.model.on('behavior', function(evt){
+				log('{}{}{} behavior', evt);
+				self.onBehavior(evt);
+			});
 		},
 		
 		set: function(key, value, setFromModel){

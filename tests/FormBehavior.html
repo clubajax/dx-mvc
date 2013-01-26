@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MVC Form Behavior Test</title>
+	<style>
+		body{
+			font-family: sans-serif;
+		}
+		label{
+			display: block;
+		}
+		label span{
+			display: inline-block;
+			width: 120px;
+			font-size: 0.8em;
+		}
+	</style>
+	<script>
+		dojoConfig = {
+			async:1,
+			isDebug:1,
+			packages:[
+				{name:'app', location:'../list/app'},
+				{name:'dx-mvc', location:'../dx-mvc'}
+			]
+		}
+	</script>
+	<script src='../../dojo/dojo.js'></script>
+	
+</head>
+<body>
+    <h1>MVC Form Behavior Test</h1>
+
+	<form id='formNode'>
+		<label><span>Label:</span><input name='label' /></label>
+		<label><span>Description:</span><input id='n1' name='description' /></label>
+		<label><span>Location:</span><input id='n2' name='location' /></label>
+		<label><span>Category:</span><input name='category' /></label>
+		
+		<label><span>Bulk:</span><input name='bulk' type='checkbox'/></label>
+		
+		<label><span>Show Description:</span><input name='myRadios' type='radio' value='showDesc'/></label>
+		<label><span>Hide Description:</span><input name='myRadios' type='radio' value='hideDesc'/></label>
+		
+		<label><span>Enable Label:</span><input name='labelRadios' type='radio' value='enableLabel'/></label>
+		<label><span>Disable Label:</span><input name='labelRadios' type='radio' value='disableLabel'/></label>
+	</form>
+	<script>
+		require([
+			'dojo/_base/declare',
+			'dojo/when',
+			'dx-mvc/Store',
+			'dx-mvc/tests/ItemModel',
+			'dx-mvc/ModelledForm',
+			'dojo/text!dx-mvc/tests/groceries.json',
+			'dx-alias/log'
+		], function(declare, when, Store, ItemModel, ModelledForm, groceriesData, logger){
+			var log = logger('', 1);
+					
+			var store = Store.getObservable({model:ItemModel});
+			
+			var doTests = function(result){
+				var itemId = 15;
+				
+				var item = store.addModelled({
+					id:itemId,
+					label:'food stuff',
+					description:'Mike was here',
+					hideDesc:false,
+					showDesc:true,
+					enableLabel:true,
+					disableLabel:false
+				});
+				
+				var mform = new ModelledForm({model:item}, 'formNode');
+				
+				item.on('change', function(evt){
+					log('on model change:', evt);
+				});
+				item.on('behavior', function(evt){
+					log('on model behavior:', evt);
+				});
+				
+				log('connected');
+				
+				return;
+				setTimeout(function(){
+					log('set item.label');
+					itemData.set('label', 'Grapes');
+					setTimeout(function(){
+						log('set item.object');
+						itemData.set({
+							'label':'Organic Eggs',
+							'category':'dairy'
+						});
+					}, 750);
+				}, 750);
+			};
+			
+			when(store.query({}), function(result){
+				setTimeout(function(){
+					doTests(result)
+				}, 1);
+			});
+					
+			
+		});
+	</script>
+</body>
+</html>

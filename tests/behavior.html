@@ -63,11 +63,12 @@
 				},
 				
 				_behaviors: {
-					// link
-					// toggle
 					// radio
 					// disabled
+					// enabled
 					// hidden
+					// visible
+					// anything really
 					hideDesc:{ radio:'myRadios' },
 					showDesc:{ radio:'myRadios' },
 					enableLabel:{ radio:'labelRadios' },
@@ -141,10 +142,10 @@
 							log('*** item behavior', eventCount, evt);
 						}); 
 						
-						log('set desc');
+						log('set desc...');
 						item.set('hideDesc', true);
 						item.set('enableLabel', false);
-						log('desc has been set');
+						log('...desc has been set');
 						log('events:', eventCount);
 						t.t(eventCount === 6, '6 events fired');
 						handle1.remove();

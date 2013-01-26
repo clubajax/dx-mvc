@@ -5,7 +5,7 @@ define([
 	'dx-alias/log'
 ], function(declare, Stateful, Evented, logger){
 	
-	var log = logger('MUI', 1);
+	var log = logger('MUI', 0);
 	
 	return declare([Stateful, Evented], {
 		postMixInProperties: function(){

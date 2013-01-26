@@ -174,8 +174,14 @@ define([
 				
 				if(this._keyBehaviors[key]){
 					this._keyBehaviors[key].forEach(function(propSettingObj){
-						var prop, propValue;
+						console.log('propSettingObj', propSettingObj);
+						var prop, propValue, useParent;
 						for(var p in propSettingObj){
+							if(p === 'useParent'){
+								console.warn('USE PARENT');
+								useParent = propSettingObj[p];
+								continue;
+							}
 							prop = p;
 							propValue = propSettingObj[p];
 						}
@@ -184,7 +190,8 @@ define([
 							oldvalue:oldvalue,
 							key:key,
 							property:prop,
-							setting:propValue
+							setting:propValue,
+							useParent:useParent
 						});		
 					}, this);
 					
@@ -192,7 +199,7 @@ define([
 			}
 			
 			if(!this.radiosBlocked && this._initialized && this._behaviors && key in this._behaviors){
-				console.log('    radios:', key, this._behaviors[key], 'isRadio:', !!this._radios._keys[key]);
+				//console.log('    radios:', key, this._behaviors[key], 'isRadio:', !!this._radios._keys[key]);
 				if(this._radios._keys[key]){
 					this.radiosBlocked = 1;
 					this._setRadios(key, value);
@@ -204,7 +211,7 @@ define([
 		
 		_setRadios: function(key, value){
 			var name = this._radios._keys[key];
-			log('  set radios', name);
+			//log('  set radios', name);
 			this._radios[name].forEach(function(k){
 				if(k !== key){
 					log('  set radio', k, name);
@@ -223,11 +230,11 @@ define([
 			this._radios[name].push(key);
 			this._radios._keys[key] = name;
 			
-			log('   radios', this._radios);
+			//log('   radios', this._radios);
 		},
 		
-		_addBehavior: function(affectedKey, uiProperty, keyToWatch){
-			log('_addBehavior', affectedKey, uiProperty, keyToWatch);
+		_addBehavior: function(affectedKey, uiProperty, keyToWatch, useParent){
+			log('_addBehavior', affectedKey, uiProperty, keyToWatch, useParent);
 			if(!this._keyBehaviors){
 				this._keyBehaviors = {};
 			}
@@ -235,20 +242,27 @@ define([
 			this._keyBehaviors[keyToWatch] = this._keyBehaviors[keyToWatch] || [];
 			var o = {};
 			o[affectedKey] = uiProperty;
+			if(useParent){
+				o.useParent = true;
+			}
+			log('prop ob', o, useParent);
 			this._keyBehaviors[keyToWatch].push(o);
 		},
 		
 		_parseBehaviors: function(){
-				console.log('    parse behavior:', this._behaviors);
+				log('    parse behavior:', this._behaviors);
 				for(var key in this._behaviors){
 					var keyBehaviors = this._behaviors[key];
 					for(var beKey in keyBehaviors){
-						console.log('        beKey', beKey, keyBehaviors[beKey]);
+						if(beKey === 'useParent'){
+							continue;
+						}
+						log('        beKey', beKey, keyBehaviors[beKey]);
 						if(beKey === Model.RADIO){
 							this._addRadio(key, keyBehaviors[beKey]);	
 						}
 						else {
-							this._addBehavior(key, beKey, keyBehaviors[beKey]);
+							this._addBehavior(key, beKey, keyBehaviors[beKey], keyBehaviors.useParent);
 						}
 					}
 				}
