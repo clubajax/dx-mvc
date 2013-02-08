@@ -6,6 +6,13 @@
 		body{
 			font-family: sans-serif;
 		}
+		form{
+			width:260px;
+		}
+		fieldset.button{
+			text-align: right;
+			border: 0;
+		}
 		label{
 			display: block;
 		}
@@ -13,6 +20,21 @@
 			display: inline-block;
 			width: 120px;
 			font-size: 0.8em;
+		}
+		input:disabled{
+			font-style: italic;
+			color: #ccc;
+		}
+		#modelDisplay{
+			position: absolute;
+			top:80px;
+			left:300px;
+			width: 300px;
+			min-height: 200px;
+			border: 1px solid #ccc;
+			white-space: pre;
+			font-family: monospace;
+			padding: 5px;
 		}
 	</style>
 	<script>
@@ -44,46 +66,69 @@
 		
 		<label><span>Enable Label:</span><input name='labelRadios' type='radio' value='enableLabel'/></label>
 		<label><span>Disable Label:</span><input name='labelRadios' type='radio' value='disableLabel'/></label>
+		<fieldset class='button'>
+			<input type='button' value='Submit' data-bind='click:validate'/>
+		</fieldset>
 	</form>
+	<div id='modelDisplay'>
+		
+	</div>
 	<script>
+		
 		require([
 			'dojo/_base/declare',
-			'dojo/when',
-			'dx-mvc/Store',
 			'dx-mvc/tests/ItemModel',
 			'dx-mvc/ModelledForm',
-			'dojo/text!dx-mvc/tests/groceries.json',
 			'dx-alias/log'
-		], function(declare, when, Store, ItemModel, ModelledForm, groceriesData, logger){
-			var log = logger('', 1);
-					
-			var store = Store.getObservable({model:ItemModel});
+		], function(declare, ItemModel, ModelledForm, logger){
 			
-			var doTests = function(result){
+			var log = logger('', 1);
+			
+			var doTests = function(){
 				var itemId = 15;
 				
-				var item = store.addModelled({
+				var item = new ItemModel({
 					id:itemId,
 					label:'food stuff',
 					description:'Mike was here',
-					hideDesc:false,
+					// behaviors
+					// both true and false are needed for radio behavior
 					showDesc:true,
+					hideDesc:false,
 					enableLabel:true,
 					disableLabel:false
 				});
 				
+				log('item', item);
+				
 				var mform = new ModelledForm({model:item}, 'formNode');
 				
+				// display model properties in textarea
+				var modelDisplay = document.getElementById('modelDisplay');
+				var displayModel = function(){
+					var o = item.get();
+					var str = '{\n';
+					for(var key in o){
+						str += '&nbsp;&nbsp;&nbsp;&nbsp;' + key +': ' + o[key] + '\n';
+					}
+					str += '}'
+					modelDisplay.innerHTML = str;
+				};
+				displayModel();
+				item.on('change', displayModel);
+				
+				return;
+				setTimeout(function(){
+					item.set('showDesc', false);
+					setTimeout(function(){
+						item.set('enableLabel', false);
+					}, 800);
+				}, 800);
 			};
 			
-			when(store.query({}), function(result){
-				setTimeout(function(){
-					doTests(result)
-				}, 1);
-			});
-					
-			
+			doTests();
 		});
+		
 	</script>
 </body>
 </html>

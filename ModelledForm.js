@@ -1,11 +1,17 @@
+/*
+ * ModelledForm is for binding HTML forms to a data model
+ * It also has light data-bind ability
+ * It is not a widget.
+ */
 define([
 	'dojo/_base/declare',
 	'dojo/on',
+	'dojo/query',
 	'./Model',
 	'./ModelledUIMixin',
 	'dx-alias/lang',
 	'dx-alias/log'
-], function(declare, on, Model, ModelledUIMixin, lang, logger){
+], function(declare, on, query, Model, ModelledUIMixin, lang, logger){
 	
 	var
 		log = logger('FRM', 1),
@@ -48,48 +54,46 @@ define([
 			}[styleProperty];
 		};
 	
-	return declare('dx-mvc.ModelledForm', ModelledUIMixin, {
+	return declare( 'dx-mvc.ModelledForm', ModelledUIMixin, {
 		model:null,
-		constructor: function(props, node){
-			log('dx-mvc.ModelledForm cnst', props);
-			lang.mix(this, props, {notUndefined:1});
-			this.domNode = typeof node == 'string' ? document.getElementById(node) : node;
+		constructor: function( props, node ){
+			log( 'dx-mvc.ModelledForm cnst', props );
+			lang.mix( this, props, { notUndefined:1 } );
+			this.domNode = typeof node == 'string' ? document.getElementById( node ) : node;
 			this._handles = [];
 			this.setModelValues();
 			this.setModelBehavior();
+			this.setBindings();
 			
 			// if not Base...
 			this.postMixInProperties();
 		},
 		
-		bindElement: function(node, key, value){
+		bindElement: function( node, key, value ){
 			var self = this;
-			if(isNodeList(node)){
-				log('NodeList');
-				for(var i=0; i<node.length; i++){
-					this.bindElement(node[i], key, node[i].value);
+			if( isNodeList( node ) ){
+				// ever use this?
+				for(var i = 0; i < node.length; i++ ){
+					this.bindElement( node[i], key, node[i].value );
 				}
 			}
-			else if(isRadioElement(node) || isCheckboxElement(node)){
-				log('RADIO!!!')
-				this._handles.push(on(node, 'click', function(evt){
-					log('CHECK!', key, evt.target.checked);
-					self.model.set(key, true);
+			else if( isRadioElement( node ) || isCheckboxElement( node ) ){
+				this._handles.push( on( node, 'click', function( evt ){
+					self.model.set( key, true );
 				}));
 			}
-			else if(isTextElement(node)){
-				this._handles.push(on(node, 'change', function(evt){
-					log('CHANGE!', key, evt.target.value);
-					self.model.set(key, true);
+			else if( isTextElement(node ) ){
+				this._handles.push( on( node, 'change', function( evt ){
+					self.model.set( key, evt.target.value );
 				}));
 			}
 		},
 		
 		setModelValues: function(){
-			log('setModelValues:', this.model);
-			for(var key in this.model._schema){
-				var element = this.setElementValue(key);
-				if(element){
+			log( 'setModelValues:', this.model );
+			for( var key in this.model._schema ){
+				var element = this.setElementValue( key );
+				if( element ){
 					this.bindElement(element, key);
 				}
 			}
@@ -100,8 +104,8 @@ define([
 				this._radios = {};
 				var nodes = this.domNode.querySelectorAll('input[type="radio"]');
 				console.log('this._radios',this._radios);
-				for(var i = 0; i < nodes.length; i++){
-					this._radios[nodes[i].value] = nodes[i];	
+				for( var i = 0; i < nodes.length; i++ ){
+					this._radios[ nodes[i].value ] = nodes[i];	
 				}
 			}
 			return this._radios[key];
@@ -169,6 +173,42 @@ define([
 				log('{}{}{} behavior', evt);
 				self.onBehavior(evt);
 			});
+		},
+		
+		setBindings: function(){
+			// checks for data-bind in any nodes
+			// only bind methods - eveything else is handled by the model
+			var
+				attr,
+				pairs,
+				pair,
+				fn,
+				self = this,
+				nodes = !!this.domNode.getAttribute( 'data-bind' ) ?
+					[ this.domNode ] : 
+					this.domNode.querySelectorAll( '[data-bind]' );
+					
+					nodes = Array.prototype.slice.call(nodes);
+				
+			nodes.forEach( function( node ){
+				attr = node.getAttribute( 'data-bind' );
+				pairs = attr.split(/,|;/);
+				pairs.forEach( function( pr ){
+					pair = pr.split( ':' );
+					fn = self[ pair[ 1 ] ] ?
+						lang.bind(self, pair[ 1 ]) :
+						window[ pair[ 1 ] ];
+					on(node, pair[ 0 ], function( evt ){
+						fn(evt);	
+					});
+				});
+			});
+		},
+		
+		validate: function(){
+			console.log(this);
+			var valid = this.model.validate();
+			console.log( 'VALIDATED', valid );
 		},
 		
 		set: function(key, value, setFromModel){

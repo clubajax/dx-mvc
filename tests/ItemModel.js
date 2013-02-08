@@ -1,7 +1,7 @@
 define([
 	'dojo/_base/declare',
-	'dx-mvc/Model',
-	'dx-mvc/validators/Required'
+	'dx-mvc/Model'
+	
 ], function(declare, Model, RequiredValidator){
 	
 	return declare(Model, {
@@ -28,7 +28,7 @@ define([
 		},
 	
 		_validators: {
-			label:[new RequiredValidator()]
+			label:{required:true, min:4, max:12}
 		},
 		
 		_behaviors: {

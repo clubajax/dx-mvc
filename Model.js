@@ -121,6 +121,14 @@ define([
 		},
 
 		get: function(key){
+			if(!key){
+				// return entire object
+				var o = {};
+				for(var k in this._schema){
+					o[k] = this.get(k);
+				}
+				return o;
+			}
 			var value = this.inherited(arguments);
 			if(this._schema[key] === Model.OBJECT){
 				var obj = this[key];
@@ -160,7 +168,7 @@ define([
 					value = new type(value);
 				}
 				var oldvalue = this.get(key);
-				this.inherited(arguments, [ key, value ]);
+				this.inherited(arguments);
 				delete this._errors[key];
 			}
 			
@@ -174,11 +182,10 @@ define([
 				
 				if(this._keyBehaviors[key]){
 					this._keyBehaviors[key].forEach(function(propSettingObj){
-						console.log('propSettingObj', propSettingObj);
+						console.log('Model.behavior', propSettingObj);
 						var prop, propValue, useParent;
 						for(var p in propSettingObj){
 							if(p === 'useParent'){
-								console.warn('USE PARENT');
 								useParent = propSettingObj[p];
 								continue;
 							}
@@ -199,8 +206,8 @@ define([
 			}
 			
 			if(!this.radiosBlocked && this._initialized && this._behaviors && key in this._behaviors){
-				//console.log('    radios:', key, this._behaviors[key], 'isRadio:', !!this._radios._keys[key]);
 				if(this._radios._keys[key]){
+					log('Model.handleRadios:', key, this._behaviors[key], 'isRadio:', !!this._radios._keys[key]);
 					this.radiosBlocked = 1;
 					this._setRadios(key, value);
 					this.radiosBlocked = 0;
