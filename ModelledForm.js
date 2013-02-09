@@ -1,17 +1,21 @@
+
 /*
  * ModelledForm is for binding HTML forms to a data model
  * It also has light data-bind ability
  * It is not a widget.
  */
+
 define([
+	
 	'dojo/_base/declare',
 	'dojo/on',
-	'dojo/query',
 	'./Model',
 	'./ModelledUIMixin',
+	'./ValidationDisplayMixin',
 	'dx-alias/lang',
 	'dx-alias/log'
-], function(declare, on, query, Model, ModelledUIMixin, lang, logger){
+	
+], function(declare, on, Model, ModelledUIMixin, ValidationDisplayMixin, lang, logger){
 	
 	var
 		log = logger('FRM', 1),
@@ -54,19 +58,24 @@ define([
 			}[styleProperty];
 		};
 	
-	return declare( 'dx-mvc.ModelledForm', ModelledUIMixin, {
+	return declare( 'dx-mvc.ModelledForm', null, {
 		model:null,
 		constructor: function( props, node ){
 			log( 'dx-mvc.ModelledForm cnst', props );
 			lang.mix( this, props, { notUndefined:1 } );
-			this.domNode = typeof node == 'string' ? document.getElementById( node ) : node;
+			this.domNode = typeof node === 'string' ? document.getElementById( node ) : node;
+		},
+		
+		postscript: function(){
+			log( 'dx-mvc.ModelledForm postscript');
+			
 			this._handles = [];
-			this.setModelValues();
+			this.setElementValues();
 			this.setModelBehavior();
 			this.setBindings();
 			
 			// if not Base...
-			this.postMixInProperties();
+			this.postMixInProperties && this.postMixInProperties();
 		},
 		
 		bindElement: function( node, key, value ){
@@ -89,8 +98,8 @@ define([
 			}
 		},
 		
-		setModelValues: function(){
-			log( 'setModelValues:', this.model );
+		setElementValues: function(){
+			log( 'setElementValues:', this.model );
 			for( var key in this.model._schema ){
 				var element = this.setElementValue( key );
 				if( element ){
@@ -206,15 +215,15 @@ define([
 		},
 		
 		validate: function(){
-			console.log(this);
 			var valid = this.model.validate();
-			console.log( 'VALIDATED', valid );
+			log( 'VALIDATED', valid );
+			//this.inherited( arguments );
 		},
 		
 		set: function(key, value, setFromModel){
 			var result = this.inherited(arguments);
 			if(typeof key !== 'object' && key !== 'model'){
-				log('SET', key);
+				log('SET', key, 'setFromModel', setFromModel);
 				this.setElementValue(key);
 			}
 			return result;

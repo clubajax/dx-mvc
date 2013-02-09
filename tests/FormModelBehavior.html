@@ -79,8 +79,11 @@
 			'dojo/_base/declare',
 			'dx-mvc/tests/ItemModel',
 			'dx-mvc/ModelledForm',
-			'dx-alias/log'
-		], function(declare, ItemModel, ModelledForm, logger){
+			'dx-mvc/ModelledUIMixin',
+			'dx-alias/log',
+			'dx-mvc/ValidationDisplayMixin',
+			
+		], function(declare, ItemModel, ModelledForm, ModelledUIMixin, logger, ValidationDisplayMixin){
 			
 			var log = logger('', 1);
 			
@@ -99,9 +102,18 @@
 					disableLabel:false
 				});
 				
+				
 				log('item', item);
 				
-				var mform = new ModelledForm({model:item}, 'formNode');
+				var Form = declare( [ValidationDisplayMixin, ModelledUIMixin, ModelledForm] );
+				//var Form = ModelledForm.createSubclass( [ValidationDisplayMixin, ModelledUIMixin] );
+				
+				log(Form.prototype)
+				//var Class = ModelledForm;
+				
+				var Class = Form
+				var mform = new Class({model:item}, 'formNode');
+				
 				
 				// display model properties in textarea
 				var modelDisplay = document.getElementById('modelDisplay');
@@ -117,11 +129,12 @@
 				displayModel();
 				item.on('change', displayModel);
 				
-				return;
+				//return;
+				// testing
 				setTimeout(function(){
-					item.set('showDesc', false);
+					item.set('hideDesc', true);
 					setTimeout(function(){
-						item.set('enableLabel', false);
+						item.set('label', 'paul');
 					}, 800);
 				}, 800);
 			};
