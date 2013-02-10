@@ -20,11 +20,13 @@ define([
 		},
 		
 		postMixInProperties: function(){
-			if( this.model ){
-				this.model.on( 'change', function( evt ){
-					this.set( evt.key, evt.value, true );
-				}, this );
-			}
+			// get and set will fail without this check
+			if( !this.model ){ throw new Error('ModelledUIMixin requires a model'); }
+			
+			this.model.on( 'change', function( evt ){
+				this.set( evt.key, evt.value, true );
+			}, this );
+			
 			this.inherited( arguments );
 		},
 		

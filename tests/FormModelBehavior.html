@@ -59,7 +59,7 @@
 		<label><span>Location:</span><input id='n2' name='location' /></label>
 		<label><span>Category:</span><input name='category' /></label>
 		
-		<label><span>Bulk:</span><input name='bulk' type='checkbox'/></label>
+		<label><span>Show Category:</span><input name='showCategory' type='checkbox'/></label>
 		
 		<label><span>Show Description:</span><input name='myRadios' type='radio' value='showDesc'/></label>
 		<label><span>Hide Description:</span><input name='myRadios' type='radio' value='hideDesc'/></label>
@@ -78,12 +78,13 @@
 		require([
 			'dojo/_base/declare',
 			'dx-mvc/tests/ItemModel',
+			'dx-mvc/ModelledBehaviorForm',
 			'dx-mvc/ModelledForm',
 			'dx-mvc/ModelledUIMixin',
 			'dx-alias/log',
 			'dx-mvc/ValidationDisplayMixin',
 			
-		], function(declare, ItemModel, ModelledForm, ModelledUIMixin, logger, ValidationDisplayMixin){
+		], function(declare, ItemModel, ModelledBehaviorForm, ModelledForm, ModelledUIMixin, logger, ValidationDisplayMixin){
 			
 			var log = logger('', 1);
 			
@@ -105,13 +106,11 @@
 				
 				log('item', item);
 				
-				var Form = declare( [ValidationDisplayMixin, ModelledUIMixin, ModelledForm] );
+				//var Form = declare( [ValidationDisplayMixin, ModelledUIMixin, ModelledForm] );
 				//var Form = ModelledForm.createSubclass( [ValidationDisplayMixin, ModelledUIMixin] );
 				
-				log(Form.prototype)
-				//var Class = ModelledForm;
+				var Class = ModelledBehaviorForm;
 				
-				var Class = Form
 				var mform = new Class({model:item}, 'formNode');
 				
 				
@@ -119,6 +118,7 @@
 				var modelDisplay = document.getElementById('modelDisplay');
 				var displayModel = function(){
 					var o = item.get();
+					log(o)
 					var str = '{\n';
 					for(var key in o){
 						str += '&nbsp;&nbsp;&nbsp;&nbsp;' + key +': ' + o[key] + '\n';
@@ -129,12 +129,13 @@
 				displayModel();
 				item.on('change', displayModel);
 				
-				//return;
+				return;
 				// testing
 				setTimeout(function(){
 					item.set('hideDesc', true);
 					setTimeout(function(){
 						item.set('label', 'paul');
+						//item.set('disableLabel', true);
 					}, 800);
 				}, 800);
 			};

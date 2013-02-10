@@ -48,31 +48,19 @@ define([
 		
 		isNodeList = function(node){
 			return !!node && node.toString().indexOf('NodeList') > -1;
-		},
-		
-		getStyleValue = function(styleProperty, bool){
-			// convert bool into a proper style value
-			return {
-				visibility: bool ? 'visible' : 'hidden',
-				display: bool ? '' : 'none'
-			}[styleProperty];
-		};
+		}
 	
-	return declare( 'dx-mvc.ModelledForm', null, {
+	return declare( 'dx-mvc.ModelledForm', ModelledUIMixin, {
 		model:null,
 		constructor: function( props, node ){
 			log( 'dx-mvc.ModelledForm cnst', props );
 			lang.mix( this, props, { notUndefined:1 } );
 			this.domNode = typeof node === 'string' ? document.getElementById( node ) : node;
-		},
-		
-		postscript: function(){
+			
 			log( 'dx-mvc.ModelledForm postscript');
 			
 			this._handles = [];
 			this.setElementValues();
-			this.setModelBehavior();
-			this.setBindings();
 			
 			// if not Base...
 			this.postMixInProperties && this.postMixInProperties();
@@ -88,9 +76,11 @@ define([
 			}
 			else if( isRadioElement( node ) || isCheckboxElement( node ) ){
 				this._handles.push( on( node, 'click', function( evt ){
-					self.model.set( key, true );
+					log('check', key, evt);
+					self.model.set( key, evt.target.checked );
 				}));
 			}
+
 			else if( isTextElement(node ) ){
 				this._handles.push( on( node, 'change', function( evt ){
 					self.model.set( key, evt.target.value );
@@ -152,72 +142,11 @@ define([
 			return element;
 		},
 		
-		onBehavior: function(evt){
-			var element = this.getElement(evt.property);
-			if(!!evt.useParent){
-				element = element.parentNode;
-			}
-			if(element){
-				var setting = evt.setting;
-				// check if attr or style
-				if(evt.setting in element){
-					element[evt.setting] = evt.value;	
-				}
-				else if(evt.setting in element.style){
-					var value = getStyleValue(evt.setting, evt.value);
-					log('SET STYLE', evt.setting, value);
-					element.style[evt.setting] = value;
-				}
-				else{
-					console.warn('unrecognized node behavior: ', evt.setting, element);	
-				}
-				
-				
-			}
-		},
-		
-		setModelBehavior: function(){
-			var self = this;
-			this.model.on('behavior', function(evt){
-				log('{}{}{} behavior', evt);
-				self.onBehavior(evt);
-			});
-		},
-		
-		setBindings: function(){
-			// checks for data-bind in any nodes
-			// only bind methods - eveything else is handled by the model
-			var
-				attr,
-				pairs,
-				pair,
-				fn,
-				self = this,
-				nodes = !!this.domNode.getAttribute( 'data-bind' ) ?
-					[ this.domNode ] : 
-					this.domNode.querySelectorAll( '[data-bind]' );
-					
-					nodes = Array.prototype.slice.call(nodes);
-				
-			nodes.forEach( function( node ){
-				attr = node.getAttribute( 'data-bind' );
-				pairs = attr.split(/,|;/);
-				pairs.forEach( function( pr ){
-					pair = pr.split( ':' );
-					fn = self[ pair[ 1 ] ] ?
-						lang.bind(self, pair[ 1 ]) :
-						window[ pair[ 1 ] ];
-					on(node, pair[ 0 ], function( evt ){
-						fn(evt);	
-					});
-				});
-			});
-		},
 		
 		validate: function(){
 			var valid = this.model.validate();
 			log( 'VALIDATED', valid );
-			//this.inherited( arguments );
+			return valid;
 		},
 		
 		set: function(key, value, setFromModel){

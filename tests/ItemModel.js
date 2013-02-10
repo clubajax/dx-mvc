@@ -12,6 +12,7 @@ define([
 			location:Model.STRING,
 			category:Model.STRING,
 			
+			showCategory:Model.BOOLEAN,
 			hideDesc:Model.BOOLEAN,
 			showDesc:Model.BOOLEAN,
 			enableLabel:Model.BOOLEAN,
@@ -24,7 +25,7 @@ define([
 			description: "",
 			location:"",
 			category:"",
-			bulk:false
+			showCategory:true
 		},
 	
 		_validators: {
@@ -37,7 +38,8 @@ define([
 			enableLabel:{ radio:'labelRadios' },
 			disableLabel:{ radio:'labelRadios' },
 			description:{ visibility:'showDesc', useParent:true},
-			label:{ disabled:'disableLabel' }
+			label:{ disabled:'disableLabel' },
+			category:{ display:'showCategory', useParent:true }
 		}
 	});
 });

@@ -172,9 +172,9 @@ define([
 				this.inherited(arguments);
 				delete this._errors[key];
 			}
-			
+			log('set', key, value, oldvalue);
 			// emit changes
-			if(oldvalue != null && this._defaults[key] !== oldvalue){
+			if(oldvalue != null && (this._initialized || this._defaults[key] !== oldvalue)){
 				log('emit', key, value);
 				this.emit('change', {
 					value:value,
@@ -184,7 +184,7 @@ define([
 				
 				if(this._keyBehaviors[key]){
 					this._keyBehaviors[key].forEach(function(propSettingObj){
-						console.log('Model.behavior', propSettingObj);
+						log('Model.behavior', propSettingObj);
 						var prop, propValue, useParent;
 						for(var p in propSettingObj){
 							if(p === 'useParent'){
