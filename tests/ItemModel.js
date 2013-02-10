@@ -1,11 +1,11 @@
 define([
 	'dojo/_base/declare',
-	'dx-mvc/model/BehaviorModel',
+	'dx-mvc/model/Behavior',
 	'dx-mvc/model/Model'
 	
-], function(declare, BehaviorModel, Model){
+], function(declare, Behavior, Model){
 	
-	return declare(BehaviorModel, {
+	return declare( Behavior, {
 		_schema: {
 			id: Model.NUMBER,
 			label: Model.STRING,

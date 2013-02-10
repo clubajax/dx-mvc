@@ -23,12 +23,12 @@
 			'doh',
 			'dojo/_base/declare',
 			'dojo/when',
-			'dx-mvc/Store',
-			'dx-mvc/Model',
-			'dx-mvc/validators/Required',
+			'dx-mvc/stores/Store',
+			'dx-mvc/model/Model',
+			'dx-mvc/model/Behavior',
 			'dojo/text!dx-mvc/tests/groceries.json',
 			'dx-alias/log'
-		], function(doh, declare, when, Store, Model, RequiredValidator, groceriesData, logger){
+		], function(doh, declare, when, Store, Model, Behavior, groceriesData, logger){
 			
 			var log = logger('', 1);
 			var line = logger(' --- ', 1);
@@ -38,7 +38,7 @@
 				log('query: ', items); // all items
 			};
 			
-			var ItemModel = declare(Model, {
+			var ItemModel = declare([Model, Behavior], {
 				_schema: {
 					id: Model.NUMBER,
 					amount: Model.NUMBER,

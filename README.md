@@ -1,3 +1,3 @@
-# DX MVC
+## DX MVC
 
-dx-mvc is a simple MVC framework for Dojo
+dx-mvc is a simple MVC framework built with Dojo

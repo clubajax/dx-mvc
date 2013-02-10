@@ -22,14 +22,13 @@
 		require([
 			'dojo/_base/declare',
 			'dojo/when',
-			'dx-mvc/Store',
-			'dx-mvc/Model',
-			'dx-mvc/ModelledUIMixin',
-			'dx-mvc/validators/Required',
+			'dx-mvc/stores/Store',
+			'dx-mvc/model/Model',
+			'dx-mvc/form/BindModel',
 			'dx-ui/Base',
 			'dojo/text!dx-mvc/tests/groceries.json',
 			'dx-alias/log'
-		], function(declare, when, Store, Model, ModelledUIMixin, RequiredValidator, Base, groceriesData, logger){
+		], function(declare, when, Store, Model, BindModel, Base, groceriesData, logger){
 			var log = logger('', 1);
 			
 			var ItemModel = declare(Model, {
@@ -50,7 +49,7 @@
 				},
 		
 				_validators: {
-					label:[new RequiredValidator()]
+					label:{required:true}
 				}
 			});
 					
@@ -60,7 +59,7 @@
 								"<div><span data-bind='label' class='label'></span></div>" +
 							"</div>";
 							
-			var ItemView = declare('dx-mvc.Item', [Base, ModelledUIMixin], {
+			var ItemView = declare('dx-mvc.Item', [Base, BindModel], {
 				id:null,
 				label:null,
 				model:null,

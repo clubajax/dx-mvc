@@ -23,24 +23,23 @@
 			'doh',
 			'dojo/_base/declare',
 			'dojo/when',
-			'dx-mvc/Store',
-			'dx-mvc/Model',
-			'dx-mvc/validators/Required',
+			'dx-mvc/stores/Store',
+			'dx-mvc/model/Model',
 			'dojo/text!dx-mvc/tests/groceries.json',
 			'dx-alias/log'
-		], function(doh, declare, when, Store, Model, RequiredValidator, groceriesData, logger){
+		], function(doh, declare, when, Store, Model, groceriesData, logger){
 			
 			var log = logger('', 1);
 			var line = logger(' --- ', 1);
 			
 			var ItemModel = declare(Model, {
 				_schema: {
-					id: "number",
-					amount: "number",
-					label: "string",
-					description: "string",
-					location:"string",
-					category:"string"
+					id: Model.NUMBER,
+					amount: Model.NUMBER,
+					label: Model.STRING,
+					description: Model.STRING,
+					location: Model.STRING,
+					category: Model.STRING
 				}
 			});
 			var store = Store.getObservable({model:ItemModel, data:JSON.parse(groceriesData)});
@@ -67,9 +66,16 @@
 					'[put]': function(t){
 						var label = 'Green Grapes';
 						var item = store.get(1);
+						log('item', item);
+						try{
 						item.set('label', label);
+						}catch(e){
+							throw new Error('E', e);
+						}
+						log('label set');
 						store.put(item);
 						var mod = store.get(1);
+						log('mod item', item);
 						t.t(mod.label === label, 'modified item label');
 					},
 					

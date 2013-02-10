@@ -92,6 +92,12 @@ define([
 		constructor: function (params) {
 			this._errors = {};
 			lang.mix(this, this._defaults);
+			if(!this._schema){
+				throw new Error('A schema is required for models');
+			}
+			if(!this._defaults){
+				this._defaults = {};
+			}
 			
 			//this._committedValues = lang.mix({}, [this._defaults, params]);
 		},
