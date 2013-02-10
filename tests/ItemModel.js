@@ -1,10 +1,11 @@
 define([
 	'dojo/_base/declare',
+	'dx-mvc/BehaviorModel',
 	'dx-mvc/Model'
 	
-], function(declare, Model, RequiredValidator){
+], function(declare, BehaviorModel, Model){
 	
-	return declare(Model, {
+	return declare(BehaviorModel, {
 		_schema: {
 			id: Model.NUMBER,
 			label: Model.STRING,
@@ -31,6 +32,11 @@ define([
 		_validators: {
 			label:{required:true, min:4, max:12}
 		},
+		
+		// errorMessages
+		// 		nested objects for a message for each validation property
+		// errorHandling
+		// 		what to do with an error - display message? show a div?
 		
 		_behaviors: {
 			hideDesc:{ radio:'myRadios' },

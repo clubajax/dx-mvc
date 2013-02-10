@@ -81,28 +81,19 @@ define([
 		_defaults: null,
 		_committedValues: null,
 		
-		// conditionals that trigger virtual properties
-		_behaviors:null,
-		
+		// TODO
+		// errorMessages
+		// 		nested objects for a message for each validation property
+		// errorHandling
+		// 		what to do with an error - display message? show a div?
 		
 		store: null,
 
 		constructor: function (params) {
 			this._errors = {};
 			lang.mix(this, this._defaults);
-			if(params && params._behaviors){
-				lang.mix(this._behaviors, params._behaviors);
-			}else{
-				delete this._behaviors;
-			}
+			
 			//this._committedValues = lang.mix({}, [this._defaults, params]);
-		},
-		
-		postscript: function(params){
-			this.inherited(arguments);
-			// do stuff after getters and setters
-			this._parseBehaviors();
-			this._initialized = true;
 		},
 
 		save: function (skipValidation) {
@@ -172,7 +163,7 @@ define([
 				this.inherited(arguments);
 				delete this._errors[key];
 			}
-			log('set', key, value, oldvalue);
+			
 			// emit changes
 			if(oldvalue != null && (this._initialized || this._defaults[key] !== oldvalue)){
 				log('emit', key, value);
@@ -181,102 +172,13 @@ define([
 					oldvalue:oldvalue,
 					key:key
 				});
-				
-				if(this._keyBehaviors[key]){
-					this._keyBehaviors[key].forEach(function(propSettingObj){
-						log('Model.behavior', propSettingObj);
-						var prop, propValue, useParent;
-						for(var p in propSettingObj){
-							if(p === 'useParent'){
-								useParent = propSettingObj[p];
-								continue;
-							}
-							prop = p;
-							propValue = propSettingObj[p];
-						}
-						this.emit('behavior', {
-							value:value,
-							oldvalue:oldvalue,
-							key:key,
-							property:prop,
-							setting:propValue,
-							useParent:useParent
-						});		
-					}, this);
-					
-				}
 			}
 			
-			if(!this.radiosBlocked && this._initialized && this._behaviors && key in this._behaviors){
-				if(this._radios._keys[key]){
-					log('Model.handleRadios:', key, this._behaviors[key], 'isRadio:', !!this._radios._keys[key]);
-					this.radiosBlocked = 1;
-					this._setRadios(key, value);
-					this.radiosBlocked = 0;
-				}
-			}
+			
 			return value;
 		},
 		
-		_setRadios: function(key, value){
-			var name = this._radios._keys[key];
-			//log('  set radios', name);
-			this._radios[name].forEach(function(k){
-				if(k !== key){
-					log('  set radio', k, name);
-					this.set(k, !value);
-				}
-			}, this);
-		},
 		
-		_addRadio: function(key, name){
-			if(!this._radios){
-				this._radios = {
-					_keys:{}	
-				};	
-			}
-			this._radios[name] = this._radios[name] || [];
-			this._radios[name].push(key);
-			this._radios._keys[key] = name;
-			
-			//log('   radios', this._radios);
-		},
-		
-		_addBehavior: function(affectedKey, uiProperty, keyToWatch, useParent){
-			log('_addBehavior', affectedKey, uiProperty, keyToWatch, useParent);
-			if(!this._keyBehaviors){
-				this._keyBehaviors = {};
-			}
-			
-			this._keyBehaviors[keyToWatch] = this._keyBehaviors[keyToWatch] || [];
-			var o = {};
-			o[affectedKey] = uiProperty;
-			if(useParent){
-				o.useParent = true;
-			}
-			log('prop ob', o, useParent);
-			this._keyBehaviors[keyToWatch].push(o);
-		},
-		
-		_parseBehaviors: function(){
-				log('    parse behavior:', this._behaviors);
-				for(var key in this._behaviors){
-					var keyBehaviors = this._behaviors[key];
-					for(var beKey in keyBehaviors){
-						if(beKey === 'useParent'){
-							continue;
-						}
-						log('        beKey', beKey, keyBehaviors[beKey]);
-						if(beKey === Model.RADIO){
-							this._addRadio(key, keyBehaviors[beKey]);	
-						}
-						else {
-							this._addBehavior(key, beKey, keyBehaviors[beKey], keyBehaviors.useParent);
-						}
-					}
-				}
-			
-		},
 		
 		validate: function ( ) {
 			this.clearErrors();
