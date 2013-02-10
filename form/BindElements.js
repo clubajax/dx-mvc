@@ -1,6 +1,7 @@
 
 /*
- * ModelledForm is for binding HTML forms to a data model
+ * BindElements is for binding HTML forms to this class and likewise its
+ * data model
  * It also has light data-bind ability
  * It is not a widget.
  */
@@ -9,13 +10,11 @@ define([
 	
 	'dojo/_base/declare',
 	'dojo/on',
-	'./Model',
-	'./ModelledUIMixin',
-	'./ValidationDisplayMixin',
+	'../model/Model',
 	'dx-alias/lang',
 	'dx-alias/log'
 	
-], function(declare, on, Model, ModelledUIMixin, ValidationDisplayMixin, lang, logger){
+], function(declare, on, Model, lang, logger){
 	
 	var
 		log = logger('FRM', 1),
@@ -50,7 +49,7 @@ define([
 			return !!node && node.toString().indexOf('NodeList') > -1;
 		}
 	
-	return declare( 'dx-mvc.ModelledForm', ModelledUIMixin, {
+	return declare( 'dx-mvc.form.BindElements', null, {
 		model:null,
 		constructor: function( props, node ){
 			log( 'dx-mvc.ModelledForm cnst', props );

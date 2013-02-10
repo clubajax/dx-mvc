@@ -7,6 +7,8 @@ define([
 	
 	var Class = declare(null, {
 		
+		invalidClass:'',
+		
 		constructor: function(){
 			
 		},
@@ -15,7 +17,7 @@ define([
 			
 		},
 		
-		Xvalidate: function(){
+		validate: function(){
 			console.log(this);
 			var valid = this.model.validate();
 			log( 'VALIDATED', valid );

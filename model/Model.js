@@ -1,7 +1,7 @@
 define([
 	'dojo/_base/declare',
 	'dojo/Stateful',
-	'./util/Evented',
+	'../util/Evented',
 	'dojo/when',
 	'dx-alias/lang',
 	'dx-alias/log'
@@ -142,8 +142,8 @@ define([
 				return this.inherited(arguments);
 			}
 			
-			// type coercion
-			else if (key in this._schema) {
+			// ensure property is allowed
+			if (key in this._schema) {
 				var type = this._schema[key];
 				
 				// allow type coersion
@@ -162,6 +162,11 @@ define([
 				var oldvalue = this.get(key);
 				this.inherited(arguments);
 				delete this._errors[key];
+			}
+			
+			else{
+				// invalid key
+				return null;
 			}
 			
 			// emit changes

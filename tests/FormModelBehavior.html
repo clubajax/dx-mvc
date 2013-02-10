@@ -78,21 +78,41 @@
 		require([
 			'dojo/_base/declare',
 			'dx-mvc/tests/ItemModel',
-			'dx-mvc/ModelledBehaviorForm',
-			'dx-mvc/ModelledForm',
-			'dx-mvc/ModelledUIMixin',
+			'dx-mvc/form/BindElements',
+			'dx-mvc/form/BindModel',
+			'dx-mvc/form/Behavior',
+			'dx-mvc/model/Model',
 			'dx-alias/log',
-			'dx-mvc/ValidationDisplayMixin',
+			'dx-mvc/form/ValidationDisplayMixin',
 			
-		], function(declare, ItemModel, ModelledBehaviorForm, ModelledForm, ModelledUIMixin, logger, ValidationDisplayMixin){
+		], function(declare, ItemModel, BindElements, BindModel, Behavior, Model, logger, ValidationDisplayMixin){
 			
 			var log = logger('', 1);
+			var mform;
 			
-			var doTests = function(){
-				var itemId = 15;
+			var changeModel = function(){
 				
 				var item = new ItemModel({
-					id:itemId,
+					id:2,
+					label:'Spring time fixes',
+					location:'Lowes',
+					category:'hardware',
+					description:'Stuff to get at Lowes',
+					// behaviors
+					// both true and false are needed for radio behavior
+					showDesc:true,
+					hideDesc:false,
+					enableLabel:true,
+					disableLabel:false
+				});
+				
+				mform.set(item);
+			}
+			
+			var doTests = function(){
+				
+				var item = new ItemModel({
+					id:1,
 					label:'food stuff',
 					description:'Mike was here',
 					// behaviors
@@ -104,14 +124,16 @@
 				});
 				
 				
-				log('item', item);
+				log('item', item, item instanceof Model);
 				
-				//var Form = declare( [ValidationDisplayMixin, ModelledUIMixin, ModelledForm] );
-				//var Form = ModelledForm.createSubclass( [ValidationDisplayMixin, ModelledUIMixin] );
+				var Class
 				
-				var Class = ModelledBehaviorForm;
+				//Class = ModelledBehaviorForm;
+				Class = declare([ BindModel, Behavior, BindElements ]);
 				
-				var mform = new Class({model:item}, 'formNode');
+				//Class = declare([ ModelledBehaviorForm, ValidationDisplayMixin ]);
+				
+				mform = new Class({model:item}, 'formNode');
 				
 				
 				// display model properties in textarea
@@ -129,6 +151,9 @@
 				displayModel();
 				item.on('change', displayModel);
 				
+				setTimeout(function(){
+					changeModel();
+				}, 800);
 				return;
 				// testing
 				setTimeout(function(){

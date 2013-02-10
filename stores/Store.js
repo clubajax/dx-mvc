@@ -1,3 +1,7 @@
+/*
+ * Convenience class. Maybe even should be in tests.
+ */
+
 define([
 	'dojo/_base/declare',
 	'dojo/Deferred',

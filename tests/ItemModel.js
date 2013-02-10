@@ -1,7 +1,7 @@
 define([
 	'dojo/_base/declare',
-	'dx-mvc/BehaviorModel',
-	'dx-mvc/Model'
+	'dx-mvc/model/BehaviorModel',
+	'dx-mvc/model/Model'
 	
 ], function(declare, BehaviorModel, Model){
 	

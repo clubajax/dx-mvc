@@ -1,15 +1,14 @@
 
 /*
- * ModelledBehaviorForm extends ModelledForm and adds behavior to the form
+ * Behavior is a mixin that binds model behavior to elements
  */
 
 define([
 	'dojo/_base/declare',
 	'dojo/on',
 	'dx-alias/lang',
-	'./ModelledForm',
 	'dx-alias/log'
-], function(declare, on, lang, ModelledForm, logger){
+], function(declare, on, lang, logger){
 	
 	var
 		
@@ -23,13 +22,16 @@ define([
 			}[styleProperty];
 		};
 		
-	return declare('dx-mvc/ModelledBehaviorForm', ModelledForm, {
-		
-		invalidClass:'',
-		
+	return declare('dx-mvc.form.Behavior', null, {
+				
 		constructor: function(){
+			
+		},
+		
+		postscript: function(){
 			this.setModelBehavior();
 			this.setBindings();
+			this.inherited(arguments);
 		},
 		
 		setBindings: function(){

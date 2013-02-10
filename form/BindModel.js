@@ -1,23 +1,19 @@
 /*
- *	ModeledUIMixin is for mixing into dx-ui/Base (or other widget)
- *	to make it bindable.
+ *	BindModel is a mixin to bind the model's get/set to the
+ *	Class's get/set
  */
 define([
 	
 	'dojo/_base/declare',
 	'dojo/Stateful',
-	'./util/Evented',
+	'../util/Evented',
 	'dx-alias/log'
 	
 ], function(declare, Stateful, Evented, logger){
 	
 	var log = logger('MUI', 0);
-	var repeat = 0;
-	var Class = declare([Stateful, Evented], {
-		
-		constructor: function(){
-			
-		},
+	
+	return declare('dx-mvc.form.BindModel', [Stateful, Evented], {
 		
 		postMixInProperties: function(){
 			// get and set will fail without this check
@@ -60,8 +56,4 @@ define([
 			return this.inherited(arguments);
 		}
 	});
-	
-	Class.name = 'VDM';
-	
-	return Class;
 })
