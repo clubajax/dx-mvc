@@ -12,6 +12,7 @@ define([
 			description: Model.STRING,
 			location:Model.STRING,
 			category:Model.STRING,
+			agree:Model.BOOLEAN,
 			
 			showCategory:Model.BOOLEAN,
 			hideDesc:Model.BOOLEAN,
@@ -26,11 +27,13 @@ define([
 			description: "",
 			location:"",
 			category:"",
+			agree:false,
 			showCategory:true
 		},
 	
 		_validators: {
-			label:{required:true, min:4, max:12}
+			label:{ required:true, min:4, max:12 },
+			agree:{ is:true }
 		},
 		
 		// errorMessages

@@ -21,6 +21,9 @@
 			width: 120px;
 			font-size: 0.8em;
 		}
+		.agree{
+			margin: 5px 0;
+		}
 		input:disabled{
 			font-style: italic;
 			color: #ccc;
@@ -35,6 +38,10 @@
 			white-space: pre;
 			font-family: monospace;
 			padding: 5px;
+		}
+		/* dxInvalid is applied to parent of offending input */
+		.dxInvalid {
+			border: 1px solid #ff0000;
 		}
 	</style>
 	<script>
@@ -66,6 +73,9 @@
 		
 		<label><span>Enable Label:</span><input name='labelRadios' type='radio' value='enableLabel'/></label>
 		<label><span>Disable Label:</span><input name='labelRadios' type='radio' value='disableLabel'/></label>
+		
+		<label class='agree'><span>Agree to Terms:</span><input name='agree' type='checkbox'/></label>
+		
 		<fieldset class='button'>
 			<input type='button' value='Submit' data-bind='click:validate'/>
 		</fieldset>
@@ -83,9 +93,9 @@
 			'dx-mvc/form/Behavior',
 			'dx-mvc/model/Model',
 			'dx-alias/log',
-			'dx-mvc/form/ValidationDisplayMixin',
+			'dx-mvc/form/ValidationDisplay',
 			
-		], function(declare, ItemModel, BindElements, BindModel, Behavior, Model, logger, ValidationDisplayMixin){
+		], function(declare, ItemModel, BindElements, BindModel, Behavior, Model, logger, ValidationDisplay){
 			
 			var log = logger('', 1);
 			var mform;
@@ -129,7 +139,7 @@
 				var Class
 				
 				//Class = ModelledBehaviorForm;
-				Class = declare([ BindModel, Behavior, BindElements ]);
+				Class = declare([ BindElements, BindModel, Behavior, ValidationDisplay ]);
 				
 				//Class = declare([ ModelledBehaviorForm, ValidationDisplayMixin ]);
 				
@@ -151,6 +161,7 @@
 				displayModel();
 				item.on('change', displayModel);
 				
+				return;
 				setTimeout(function(){
 					changeModel();
 				}, 800);

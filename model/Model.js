@@ -28,6 +28,9 @@ define([
 				}
 				return !isNull(value);
 			
+			case 'is':
+				return validatorValue === value;
+			
 			case 'custom':
 			case 'function':
 				console.log(' XXXXXXXXXXXX validate CUSTOM:::::', validatorType, typeof validatorValue, key, '('+typeof value+')', value);
@@ -145,6 +148,7 @@ define([
 			if (typeof key === "object") {
 				// Stateful class will loop through the object and redirect
 				// properties here
+				// new model can just do: item.set(model);
 				return this.inherited(arguments);
 			}
 			

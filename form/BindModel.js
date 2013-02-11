@@ -1,6 +1,7 @@
 /*
  *	BindModel is a mixin to bind the model's get/set to the
  *	Class's get/set
+ *	To be mixed in with BindElements
  */
 define([
 	

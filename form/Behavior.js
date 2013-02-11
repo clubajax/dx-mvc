@@ -1,6 +1,7 @@
 
 /*
  * Behavior is a mixin that binds model behavior to elements
+ * To be mixed in with BindElements
  */
 
 define([
@@ -83,8 +84,6 @@ define([
 				else{
 					console.warn('unrecognized node behavior: ', evt.setting, element);	
 				}
-				
-				
 			}
 		},
 		
@@ -98,6 +97,7 @@ define([
 		validate: function(){
 			var valid = this.inherited( arguments );
 			log( 'VALIDATED', valid );
+			return valid
 			
 		}
 	});	
