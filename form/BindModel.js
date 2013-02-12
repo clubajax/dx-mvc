@@ -10,11 +10,11 @@ define([
 	'../util/Evented',
 	'dx-alias/log'
 	
-], function(declare, Stateful, Evented, logger){
+], function( declare, Stateful, Evented, logger ){
 	
-	var log = logger('MUI', 0);
+	var log = logger( 'MUI', 0 );
 	
-	return declare('dx-mvc.form.BindModel', [Stateful, Evented], {
+	return declare( 'dx-mvc.form.BindModel', [ Stateful, Evented ], {
 		
 		postMixInProperties: function(){
 			// get and set will fail without this check
@@ -27,34 +27,34 @@ define([
 			this.inherited( arguments );
 		},
 		
-		set: function(key, value, setFromModel){
+		set: function( key, value, setFromModel ){
 			//log('set', key, value, !!setFromModel);
 			
-			if(key === 'model'){
+			if( key === 'model' ){
 				return value;
 			}
-			if(typeof key === 'object'){
-				return this.inherited(arguments);
+			if( typeof key === 'object' ){
+				return this.inherited( arguments );
 			}
-			var oldvalue = this.get(key);
-			if(this.model && !setFromModel && key in this.model){
-				this.model.set(key, value);
+			var oldvalue = this.get( key );
+			if( this.model && !setFromModel && key in this.model ){
+				this.model.set( key, value );
 			}
 			
 			// CHECK IF VALID
-			this.emit('change', {
+			this.emit( 'change', {
 				value:value,
 				key:key,
 				oldvalue:oldvalue
 			});
-			return this.inherited(arguments);
+			return this.inherited( arguments );
 		},
 		
-		get: function(key){
-			if(this.model && key in this.model){
+		get: function( key ){
+			if( this.model && key in this.model ){
 				return this.model[key];
 			}
-			return this.inherited(arguments);
+			return this.inherited( arguments );
 		}
 	});
 })

@@ -23,12 +23,13 @@
 			'dojo/when',
 			'dx-mvc/stores/Store',
 			'dx-mvc/model/Model',
+			'dx-mvc/model/Validation',
 			'dojo/text!dx-mvc/tests/groceries.json',
 			'dx-alias/log'
-		], function(declare, when, Store, Model, groceriesData, logger){
+		], function(declare, when, Store, Model, Validation, groceriesData, logger){
 			var log = logger('', 1);
 			
-			var ItemModel = declare(Model, {
+			var ItemModel = declare([ Model, Validation ], {
 				_schema: {
 					id: "number",
 					label: "string",

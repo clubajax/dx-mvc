@@ -49,12 +49,12 @@
 		require([
 			'dojo/_base/declare',
 			'dojo/when',
-			'dx-mvc/Store',
+			'dx-mvc/stores/Store',
 			'dx-mvc/tests/ItemModel',
-			'dx-mvc/ModelledForm',
+			'dx-mvc/form/Form',
 			'dojo/text!dx-mvc/tests/groceries.json',
 			'dx-alias/log'
-		], function(declare, when, Store, ItemModel, ModelledForm, groceriesData, logger){
+		], function(declare, when, Store, ItemModel, Form, groceriesData, logger){
 			var log = logger('', 1);
 					
 			var store = Store.getObservable({model:ItemModel});
@@ -72,7 +72,7 @@
 					disableLabel:false
 				});
 				
-				var mform = new ModelledForm({model:item}, 'formNode');
+				var mform = new Form({model:item}, 'formNode');
 				
 			};
 			

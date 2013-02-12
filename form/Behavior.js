@@ -5,29 +5,26 @@
  */
 
 define([
+	
 	'dojo/_base/declare',
 	'dojo/on',
 	'dx-alias/lang',
 	'dx-alias/log'
-], function(declare, on, lang, logger){
+
+], function( declare, on, lang, logger ){
 	
 	var
+		log = logger( 'MBF', 1 ),
 		
-		log = logger('MBF', 1),
-		
-		getStyleValue = function(styleProperty, bool){
+		getStyleValue = function( styleProperty, bool ){
 			// convert bool into a proper style value
 			return {
 				visibility: bool ? 'visible' : 'hidden',
 				display: bool ? '' : 'none'
-			}[styleProperty];
+			}[ styleProperty ];
 		};
 		
-	return declare('dx-mvc.form.Behavior', null, {
-				
-		constructor: function(){
-			
-		},
+	return declare( 'dx-mvc.form.Behavior', null, {
 		
 		postscript: function(){
 			this.setModelBehavior();
@@ -65,40 +62,39 @@ define([
 			});
 		},
 		
-		onBehavior: function(evt){
-			var element = this.getElement(evt.property);
-			if(!!evt.useParent){
+		onBehavior: function( evt ){
+			var element = this.getElement( evt.property );
+			if( !!evt.useParent ){
 				element = element.parentNode;
 			}
-			if(element){
+			if( element ){
 				var setting = evt.setting;
 				// check if attr or style
-				if(evt.setting in element){
+				if( evt.setting in element ){
 					element[evt.setting] = evt.value;	
 				}
-				else if(evt.setting in element.style){
-					var value = getStyleValue(evt.setting, evt.value);
+				else if( evt.setting in element.style ){
+					var value = getStyleValue( evt.setting, evt.value );
 					log('SET STYLE', evt.setting, value);
-					element.style[evt.setting] = value;
+					element.style[ evt.setting ] = value;
 				}
 				else{
-					console.warn('unrecognized node behavior: ', evt.setting, element);	
+					console.warn( 'unrecognized node behavior: ', evt.setting, element );	
 				}
 			}
 		},
 		
 		setModelBehavior: function(){
-			this.model.on('behavior', function(evt){
-				log('behavior', evt);
-				this.onBehavior(evt);
-			}, this);
+			this.model.on( 'behavior', function( evt ){
+				log( 'behavior', evt );
+				this.onBehavior( evt );
+			}, this );
 		},
 		
 		validate: function(){
 			var valid = this.inherited( arguments );
 			log( 'VALIDATED', valid );
-			return valid
-			
+			return valid;
 		}
 	});	
 });
