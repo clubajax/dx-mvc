@@ -7,7 +7,7 @@
 define([
 
 	'dojo/_base/declare',
-	'../util/dom',
+	'dx-alias/dom',
 	'dx-alias/log'
 
 ], function( declare, dom, logger ){

@@ -3,6 +3,12 @@ define([
 	'dx-alias/log'
 ], function(declare, logger){
 	
+	// TODO
+	// errorMessages
+	// 		nested objects for a message for each validation property
+	// errorHandling
+	// 		what to do with an error - display message? show a div?
+	
 	var log = logger('VAL', 1);
 	
 	var isNull = function(value){
@@ -72,7 +78,7 @@ define([
 		return result;
 	}
 	
-	return declare(null, {
+	return declare('dx-mvc.model.Validation', null, {
 		
 		validate: function ( ) {
 			this.clearErrors();

@@ -1,5 +1,5 @@
 /*
- * Convenience class. Maybe even should be in tests.
+ * Convenience class for a Store
  */
 
 define([

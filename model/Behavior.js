@@ -13,21 +13,19 @@ define([
 	
 	var log = logger( 'BM', 1 );
 	
-	return declare( 'dx-mvc.model.Behavior', Model, {
+	return declare( 'dx-mvc.model.Behavior', null, {
 		
 		// conditionals that trigger virtual properties
 		_behaviors:null,
-		
-		constructor: function( params ){
+
+		postConstructor: function( params ){
+			this.inherited( arguments );
+			console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 			if( params && params._behaviors ){
 				lang.mix(this._behaviors, params._behaviors);
 			}else{
 				delete this._behaviors;
 			}
-		},
-		
-		postscript: function( params ){
-			this.inherited( arguments );
 			
 			this._parseBehaviors();
 			this._initialized = true;
@@ -122,7 +120,7 @@ define([
 		},
 		
 		_parseBehaviors: function(){
-			
+			if(!this._behaviors){ return; }
 			log('    parse behavior:', this._behaviors);
 			for(var key in this._behaviors){
 				var keyBehaviors = this._behaviors[key];

@@ -9,7 +9,7 @@
 define([
 	
 	'dojo/_base/declare',
-	'dojo/on',
+	'dx-alias/on',
 	'../model/Model',
 	'dx-alias/lang',
 	'dx-alias/log'
@@ -71,8 +71,7 @@ define([
 		},
 		
 		bindElement: function( node, key, value ){
-			var i,
-				self = this;
+			var i;
 				
 			if( isNodeList( node ) ){
 				// ever use this?
@@ -81,15 +80,15 @@ define([
 				}
 			}
 			else if( isRadioElement( node ) || isCheckboxElement( node ) ){
-				this._handles.push( on( node, 'click', function( evt ){
+				this._handles.push( on( node, 'click', this, function( evt ){
 					log('check', key, evt);
-					self.model.set( key, evt.target.checked );
+					this.model.set( key, evt.target.checked );
 				}));
 			}
 
 			else if( isTextElement(node ) ){
-				this._handles.push( on( node, 'change', function( evt ){
-					self.model.set( key, evt.target.value );
+				this._handles.push( on( node, 'change', this, function( evt ){
+					this.model.set( key, evt.target.value );
 				}));
 			}
 		},

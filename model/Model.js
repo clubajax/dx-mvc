@@ -1,7 +1,7 @@
 define([
 	'dojo/_base/declare',
 	'dojo/Stateful',
-	'../util/Evented',
+	'dx-alias/Evented',
 	'dojo/when',
 	'dx-alias/lang',
 	'dx-alias/log'
@@ -9,21 +9,13 @@ define([
 	
 	var log = logger('MDL', 1);
 	
-	
-	
-	var Model = declare([Stateful, Evented], {
+	var Model = declare('dx-mvc.model.Model', [Stateful, Evented], {
 		//	summary:
 		//		A base class for data models.
 		_errors: null,
 		_schema: null,
 		_defaults: null,
 		_committedValues: null,
-		
-		// TODO
-		// errorMessages
-		// 		nested objects for a message for each validation property
-		// errorHandling
-		// 		what to do with an error - display message? show a div?
 		
 		store: null,
 
@@ -37,6 +29,9 @@ define([
 				this._defaults = {};
 			}
 			
+			if(this.postConstructor){
+				this.postConstructor(params);
+			}
 			//this._committedValues = lang.mix({}, [this._defaults, params]);
 		},
 

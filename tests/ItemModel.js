@@ -6,7 +6,7 @@ define([
 	
 ], function( declare, Behavior, Model, Validation ){
 	
-	return declare( [Behavior, Validation], {
+	return declare( [ Validation, Behavior, Model], {
 		_schema: {
 			id: Model.NUMBER,
 			label: Model.STRING,

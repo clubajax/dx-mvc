@@ -4,5 +4,7 @@ define([
 	'./BindElements',
 	'./ValidationDisplay'
 ], function(declare, BindModel, BindElements, ValidationDisplay){
-	return declare([ BindModel, BindElements, ValidationDisplay ]);
+	
+	return declare([ ValidationDisplay, BindModel, BindElements ]);
+
 });
