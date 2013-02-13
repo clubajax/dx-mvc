@@ -7,7 +7,7 @@ define([
 	
 	'dojo/_base/declare',
 	'dojo/Stateful',
-	'../util/Evented',
+	'dx-alias/Evented',
 	'dx-alias/log'
 	
 ], function( declare, Stateful, Evented, logger ){
