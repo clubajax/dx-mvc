@@ -1,15 +1,17 @@
 define([
+	
 	'dojo/_base/declare',
 	'dojo/Stateful',
 	'dx-alias/Evented',
 	'dojo/when',
 	'dx-alias/lang',
 	'dx-alias/log'
-], function (declare, Stateful, Evented, when, lang, logger) {
+	
+], function( declare, Stateful, Evented, when, lang, logger ) {
 	
 	var log = logger('MDL', 1);
 	
-	var Model = declare('dx-mvc.model.Model', [Stateful, Evented], {
+	var Model = declare( 'dx-mvc.model.Model', [ Stateful, Evented ], {
 		//	summary:
 		//		A base class for data models.
 		_errors: null,
@@ -19,17 +21,17 @@ define([
 		
 		store: null,
 
-		constructor: function (params) {
+		constructor: function( params ) {
 			this._errors = {};
-			lang.mix(this, this._defaults);
-			if(!this._schema){
+			lang.mix( this, this._defaults );
+			if( !this._schema ){
 				throw new Error('A schema is required for models');
 			}
-			if(!this._defaults){
+			if( !this._defaults ){
 				this._defaults = {};
 			}
 			
-			if(this.postConstructor){
+			if( this.postConstructor ){
 				this.postConstructor(params);
 			}
 			//this._committedValues = lang.mix({}, [this._defaults, params]);

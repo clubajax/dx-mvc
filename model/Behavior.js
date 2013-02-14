@@ -20,11 +20,11 @@ define([
 
 		postConstructor: function( params ){
 			this.inherited( arguments );
-			console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 			if( params && params._behaviors ){
 				lang.mix(this._behaviors, params._behaviors);
 			}else{
-				delete this._behaviors;
+				log('no behaviors');
+				//delete this._behaviors;
 			}
 			
 			this._parseBehaviors();
@@ -39,10 +39,9 @@ define([
 				key = evt.key,
 				value = evt.value,
 				oldvalue = evt.oldvalue;
-				
-			log('BEHAVIOR CHANGE');
 			
 			if( oldvalue != null && ( this._initialized || this._defaults[key] !== oldvalue )){
+				
 				log('emit', key, value);
 				
 				if( this._keyBehaviors[key] ){
@@ -105,9 +104,7 @@ define([
 		
 		_addBehavior: function( affectedKey, uiProperty, keyToWatch, useParent ){
 			log('_addBehavior', affectedKey, uiProperty, keyToWatch, useParent );
-			if( !this._keyBehaviors ){
-				this._keyBehaviors = {};
-			}
+			if(!this._behaviors){ return; }
 			
 			this._keyBehaviors[keyToWatch] = this._keyBehaviors[keyToWatch] || [];
 			var o = {};
@@ -120,6 +117,7 @@ define([
 		},
 		
 		_parseBehaviors: function(){
+			this._keyBehaviors = {};
 			if(!this._behaviors){ return; }
 			log('    parse behavior:', this._behaviors);
 			for(var key in this._behaviors){
