@@ -11,6 +11,7 @@ define([
 	
 	var log = logger('MDL', 0);
 	
+	
 	var Model = declare( 'dx-mvc.model.Model', [ Stateful, Evented ], {
 		//	summary:
 		//		A base class for data models.
