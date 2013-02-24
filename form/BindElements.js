@@ -57,7 +57,7 @@ define([
 			log( 'dx-mvc.ModelledForm cnst', props );
 			lang.mix( this, props, { notUndefined:1 } );
 			
-			// TODO - move this to postscript for if this is extended by a Widget
+			// TODO - move this to postscript in case this is extended by a Widget
 			
 			this.domNode = typeof node === 'string' ? document.getElementById( node ) : node;
 			
@@ -118,6 +118,7 @@ define([
 		},
 		
 		getElement: function( key ){
+			// assumes form accessor
 			return this.domNode[key] || this.getRadio( key );
 		},
 		

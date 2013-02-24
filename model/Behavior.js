@@ -11,7 +11,7 @@ define([
 
 ], function ( declare, Model, lang, logger ) {
 	
-	var log = logger( 'BM', 1 );
+	var log = logger( 'BM', 0 );
 	
 	return declare( 'dx-mvc.model.Behavior', null, {
 		

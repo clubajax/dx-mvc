@@ -9,7 +9,7 @@ define([
 	
 ], function( declare, Stateful, Evented, when, lang, logger ) {
 	
-	var log = logger('MDL', 1);
+	var log = logger('MDL', 0);
 	
 	var Model = declare( 'dx-mvc.model.Model', [ Stateful, Evented ], {
 		//	summary:
@@ -23,7 +23,7 @@ define([
 
 		constructor: function( params ) {
 			this._errors = {};
-			lang.mix( this, this._defaults );
+			lang.mix( this, this._defaults || {} );
 			if( !this._schema ){
 				throw new Error('A schema is required for models');
 			}
@@ -37,7 +37,7 @@ define([
 			//this._committedValues = lang.mix({}, [this._defaults, params]);
 		},
 
-		save: function (skipValidation) {
+		save: function ( skipValidation ) {
 			// should this throw an error?
 			// make save optional?
 			if (!skipValidation && !this.validate()) {
@@ -81,9 +81,10 @@ define([
 				// Stateful class will loop through the object and redirect
 				// properties here
 				// new model can just do: item.set(model);
+				log('loop object', key, value);
 				return this.inherited(arguments);
 			}
-			
+			log('set', key, value);
 			// ensure property is allowed
 			if (key in this._schema) {
 				var type = this._schema[key];
@@ -112,8 +113,8 @@ define([
 			}
 			
 			// emit changes
-			if(oldvalue != null && (this._initialized || this._defaults[key] !== oldvalue)){
-				log('emit', key, value);
+			if(oldvalue != null && oldvalue != '' && oldvalue != this._defaults[key] && (this._initialized || this._defaults[key] !== oldvalue)){
+				log('emit', key, value, '(',(typeof oldvalue), oldvalue,')');
 				this.emit('change', {
 					value:value,
 					oldvalue:oldvalue,

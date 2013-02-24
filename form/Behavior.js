@@ -85,6 +85,9 @@ define([
 		},
 		
 		setModelBehavior: function(){
+			if(!this.model){
+				throw new Error(this.declaredClass + ' requires a model object property');
+			}
 			this.model.on( 'behavior', function( evt ){
 				log( 'behavior', evt );
 				this.onBehavior( evt );
