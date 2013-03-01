@@ -15,9 +15,8 @@ define([
 		createModel: function (obj) {
 			var Model = this.model;
 			if (!Model) {
-				throw new Error("Cannot create new model");
+				throw new Error("ModelledStoreMixin does not have a Model class");
 			}
-			console.log('INSTANCE');
 			var model = new Model(obj);
 			model.store = this;
 			return model;

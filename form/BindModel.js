@@ -12,18 +12,24 @@ define([
 	
 ], function( declare, Stateful, Evented, logger ){
 	
-	var log = logger( 'MUI', 0 );
+	var log = logger( 'BM', 1 );
 	
 	return declare( 'dx-mvc.form.BindModel', [ Stateful, Evented ], {
 		
-		postMixInProperties: function(){
-			// get and set will fail without this check
-			if( !this.model ){ throw new Error('ModelledUIMixin requires a model'); }
-			
+		postscript: function(){
+			log(' * postscript');
+			if( this.model ){ 
+				this.setModel( this.model );
+			}
+			this.inherited( arguments );
+		},
+		
+		setModel: function(model){
+			log('setModel');
+			this.model = model;
 			this.model.on( 'change', function( evt ){
 				this.set( evt.key, evt.value, true );
 			}, this );
-			
 			this.inherited( arguments );
 		},
 		

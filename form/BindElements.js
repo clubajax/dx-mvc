@@ -17,7 +17,7 @@ define([
 ], function( declare, on, Model, lang, logger ){
 	
 	var
-		log = logger('FRM', 1),
+		log = logger('BE', 1),
 		
 		isNode = function( node ){
 			return node && typeof node === 'object' && node.nodeType !== undefined;
@@ -54,20 +54,30 @@ define([
 		model:null,
 		
 		constructor: function( props, node ){
-			log( 'dx-mvc.ModelledForm cnst', props );
+			log( 'dx-mvc.form.BindElements cnst', props );
 			lang.mix( this, props, { notUndefined:1 } );
-			
-			// TODO - move this to postscript in case this is extended by a Widget
 			
 			this.domNode = typeof node === 'string' ? document.getElementById( node ) : node;
 			
-			log( 'dx-mvc.ModelledForm postscript' );
-			
 			this._handles = [];
-			this.setElementValues();
 			
 			// if not Base...
 			this.postMixInProperties && this.postMixInProperties();
+		},
+		
+		postscript: function(){
+			log(' * postscript', !!this.model);
+			if(this.model){
+				this.setElementValues();
+			}
+			this.inherited( arguments );
+		},
+		
+		setModel: function( model ){
+			log('setModel');
+			this.model = model;
+			this.setElementValues();
+			this.inherited( arguments );
 		},
 		
 		bindElement: function( node, key, value ){
@@ -109,7 +119,6 @@ define([
 			if(!this._radios){
 				this._radios = {};
 				nodes = this.domNode.querySelectorAll( 'input[type="radio"]' );
-				console.log( 'this._radios',this._radios );
 				for( i = 0; i < nodes.length; i++ ){
 					this._radios[ nodes[i].value ] = nodes[i];	
 				}
@@ -123,6 +132,10 @@ define([
 		},
 		
 		setElementValue: function( key ){
+			if(!this.model){
+				// Even if there is no model on parse, Stateful still sends properties
+				return null;
+			}
 			var i,
 				value,
 				element = this.getElement( key );
@@ -163,7 +176,7 @@ define([
 		set: function(key, value, setFromModel){
 			var result = this.inherited(arguments);
 			if(typeof key !== 'object' && key !== 'model'){
-				log('SET', key, 'setFromModel', setFromModel);
+				log('SET', key, setFromModel ? 'setFromModel' : '');
 				this.setElementValue( key );
 			}
 			return result;

@@ -136,7 +136,7 @@
 				
 				log('item', item, item instanceof Model);
 				
-				var Class = declare([ BindElements, BindModel, Behavior, ValidationDisplay ]);
+				var Class = declare([ ValidationDisplay, BindModel, BindElements, Behavior ]);
 				mform = new Class({model:item}, 'formNode');
 				
 				

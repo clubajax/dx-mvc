@@ -14,7 +14,7 @@ define([
 ], function( declare, on, lang, logger ){
 	
 	var
-		log = logger( 'MBF', 1 ),
+		log = logger( 'BV', 1 ),
 		
 		getStyleValue = function( styleProperty, bool ){
 			// convert bool into a proper style value
@@ -27,9 +27,19 @@ define([
 	return declare( 'dx-mvc.form.Behavior', null, {
 		
 		postscript: function(){
+			log(' * postscript');
+			if( this.model ){ 
+				this.setModel( this.model );
+			}
+			this.inherited(arguments);
+		},
+		
+		setModel: function(model){
+			log('setModel');
+			this.model = model;
 			this.setModelBehavior();
 			this.setBindings();
-			this.inherited(arguments);
+			this.inherited( arguments );
 		},
 		
 		setBindings: function(){

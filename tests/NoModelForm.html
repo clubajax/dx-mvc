@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MVC No Model Form Test</title>
+	<style>
+		body{
+			font-family: sans-serif;
+		}
+		label{
+			display: block;
+		}
+		label span{
+			display: inline-block;
+			width: 120px;
+			font-size: 0.8em;
+		}
+	</style>
+	<script>
+		dojoConfig = {
+			async:1,
+			isDebug:1,
+			packages:[
+				{name:'app', location:'../list/app'},
+				{name:'dx-mvc', location:'../dx-mvc'}
+			]
+		}
+	</script>
+	<script src='../../dojo/dojo.js'></script>
+	
+</head>
+<body>
+    <h1>MVC No Model Form  Test</h1>
+
+	<form id='formNode' data-view='dx-mvc/form/Form'>
+		<label><span>Label:</span><input name='label' /></label>
+		<label><span>Description:</span><input id='n1' name='description' /></label>
+		<label><span>Location:</span><input id='n2' name='location' /></label>
+		<label><span>Category:</span><input name='category' /></label>
+		
+		<label><span>Show Category:</span><input name='showCategory' type='checkbox'/></label>
+		
+		<label><span>Show Description:</span><input name='myRadios' type='radio' value='showDesc'/></label>
+		<label><span>Hide Description:</span><input name='myRadios' type='radio' value='hideDesc'/></label>
+		
+		<label><span>Enable Label:</span><input name='labelRadios' type='radio' value='enableLabel'/></label>
+		<label><span>Disable Label:</span><input name='labelRadios' type='radio' value='disableLabel'/></label>
+		
+		<label class='agree'><span>Agree to Terms:</span><input name='agree' type='checkbox'/></label>
+		
+		<fieldset class='button'>
+			<input type='button' value='Submit' data-bind='click:validate'/>
+		</fieldset>
+	</form>
+	<script>
+		require([
+			'dojo/_base/declare',
+			'dojo/when',
+			'dx-mvc/stores/Store',
+			'dx-mvc/tests/ItemModel',
+			'dx-mvc/form/Form',
+			'dojo/text!dx-mvc/tests/groceries.json',
+			'dx-alias/log',
+			'dx-ui/util/parser',
+			'dx-ui/view/views'
+		], function(declare, when, Store, ItemModel, Form, groceriesData, logger, parser, views){
+			var log = logger('', 1);
+					
+			var store = Store.getObservable({model:ItemModel});
+			
+			var doTests = function(result){
+				var itemId = 15;
+				
+				var item = store.addModelled({
+					id:itemId,
+					label:'food stuff',
+					description:'Mike was here',
+					// behaviors
+					// both true and false are needed for radio behavior
+					showDesc:true,
+					hideDesc:false,
+					enableLabel:true,
+					disableLabel:false
+				});
+				
+				
+				parser.parse();
+				
+				//var mform = new Form({}, 'formNode');
+				
+				setTimeout(function(){
+					var form = views.byId('formNode');
+					log('Form:', form);
+					form.setModel( item );
+				}, 500);
+			};
+			
+			when(store.query({}), function(result){
+				setTimeout(function(){
+					doTests(result)
+				}, 1);
+			});
+					
+			
+		});
+	</script>
+</body>
+</html>
