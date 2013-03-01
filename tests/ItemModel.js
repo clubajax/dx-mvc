@@ -1,4 +1,5 @@
 define([
+	
 	'dojo/_base/declare',
 	'dx-mvc/model/Behavior',
 	'dx-mvc/model/Model',

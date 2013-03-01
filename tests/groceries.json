@@ -5,20 +5,7 @@
 		"description":"Sunkist",
 		"location":"Kroger",
 		"category":"fruit",
-		"bulk":true,
-		"monday":false,
-		"wednesday":false,
-		"friday":true,
-		"day":[
-			{"monday":false},
-			{"wednesday":false},
-			{"friday":true}
-		],
-		"days":{
-			"monday":false,
-			"wednesday":false,
-			"friday":true
-		}
+		"bulk":true
 	},
 	{
 		"id":2,
