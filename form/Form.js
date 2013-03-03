@@ -6,6 +6,6 @@ define([
 	'./ValidationDisplay'
 ], function(declare, BindModel, Behavior, BindElements, ValidationDisplay){
 	
-	return declare('dx-mvc.form.Form', [ ValidationDisplay, BindModel, BindElements, Behavior ]);
+	return declare('dx-mvc.form.Form', [ ValidationDisplay, BindElements, Behavior, BindModel ]);
 
 });

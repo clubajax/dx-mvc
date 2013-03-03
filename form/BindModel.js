@@ -1,20 +1,30 @@
 /*
  *	BindModel is a mixin to bind the model's get/set to the
  *	Class's get/set
- *	To be mixed in with BindElements
+ *
+ *	This is the base model class
+ *	
  */
 define([
 	
 	'dojo/_base/declare',
 	'dojo/Stateful',
+	'dx-alias/lang',
 	'dx-alias/Evented',
 	'dx-alias/log'
 	
-], function( declare, Stateful, Evented, logger ){
+], function( declare, Stateful, lang, Evented, logger ){
 	
 	var log = logger( 'BM', 1 );
 	
 	return declare( 'dx-mvc.form.BindModel', [ Stateful, Evented ], {
+		
+		constructor: function( props ){
+			
+			log( 'dx-mvc.form.BindModel cnst', props );
+			lang.mix( this, props, { notUndefined:1 } );
+			
+		},
 		
 		postscript: function(){
 			log(' * postscript');
@@ -26,15 +36,18 @@ define([
 		
 		setModel: function(model){
 			log('setModel');
+			if(this.model){
+				this.model.removeEvents();
+			}
 			this.model = model;
 			this.model.on( 'change', function( evt ){
 				this.set( evt.key, evt.value, true );
 			}, this );
-			this.inherited( arguments );
+			this.emit('setmodel', model);
 		},
 		
 		set: function( key, value, setFromModel ){
-			//log('set', key, value, !!setFromModel);
+			log('set', key, value, !!setFromModel);
 			
 			if( key === 'model' ){
 				return value;

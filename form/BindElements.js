@@ -4,6 +4,9 @@
  * data model
  * It also has light data-bind ability
  * It is not a widget.
+ *
+ * requires BindModel
+ * 
  */
 
 define([
@@ -55,30 +58,16 @@ define([
 		
 		constructor: function( props, node ){
 			log( 'dx-mvc.form.BindElements cnst', props );
-			lang.mix( this, props, { notUndefined:1 } );
+			//lang.mix( this, props, { notUndefined:1 } );
 			
 			this.domNode = typeof node === 'string' ? document.getElementById( node ) : node;
 			
-			this._handles = [];
+			this.on('setmodel', this.setElementValues, this);
 			
 			// if not Base...
 			this.postMixInProperties && this.postMixInProperties();
 		},
 		
-		postscript: function(){
-			log(' * postscript', !!this.model);
-			if(this.model){
-				this.setElementValues();
-			}
-			this.inherited( arguments );
-		},
-		
-		setModel: function( model ){
-			log('setModel');
-			this.model = model;
-			this.setElementValues();
-			this.inherited( arguments );
-		},
 		
 		bindElement: function( node, key, value ){
 			var i;
@@ -90,14 +79,14 @@ define([
 				}
 			}
 			else if( isRadioElement( node ) || isCheckboxElement( node ) ){
-				this._handles.push( on( node, 'click', this, function( evt ){
-					log('check', key, evt);
+				this.own( on( node, 'click', this, function( evt ){
+					log('checkbox', key, evt);
 					this.model.set( key, evt.target.checked );
 				}));
 			}
 
 			else if( isTextElement(node ) ){
-				this._handles.push( on( node, 'change', this, function( evt ){
+				this.own( on( node, 'change', this, function( evt ){
 					this.model.set( key, evt.target.value );
 				}));
 			}

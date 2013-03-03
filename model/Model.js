@@ -9,7 +9,7 @@ define([
 	
 ], function( declare, Stateful, Evented, when, lang, logger ) {
 	
-	var log = logger('MDL', 0);
+	var log = logger('MDL', 1);
 	
 	var Model = declare( 'dx-mvc.model.Model', [ Stateful, Evented ], {
 		//	summary:
@@ -35,6 +35,14 @@ define([
 				this.postConstructor(params);
 			}
 			//this._committedValues = lang.mix({}, [this._defaults, params]);
+		},
+		
+		postscript: function(){
+			// call postscript on Stateful
+			this.inherited(arguments);
+			// params in Stateful initialized, all settings here-after
+			// will emit events
+			this.initialized = true;
 		},
 
 		save: function ( skipValidation ) {
@@ -84,6 +92,10 @@ define([
 				log('loop object', key, value);
 				return this.inherited(arguments);
 			}
+			if(this._schema[key] === undefined){
+				log('attempt to set property not in schema:', key);
+				return null;
+			}
 			log('set', key, value);
 			// ensure property is allowed
 			if (key in this._schema) {
@@ -113,15 +125,21 @@ define([
 			}
 			
 			// emit changes
-			if(oldvalue != null && oldvalue != '' && oldvalue != this._defaults[key] && (this._initialized || this._defaults[key] !== oldvalue)){
+			
+			var wasNotNull = oldvalue != null;
+			var wasNotDefault = this._defaults[key] === undefined || this._defaults[key] !== oldvalue;
+			var oldWasNotDefault = oldvalue != this._defaults[key];
+			
+			if( this.initialized ){
 				log('emit', key, value, '(',(typeof oldvalue), oldvalue,')');
 				this.emit('change', {
 					value:value,
 					oldvalue:oldvalue,
 					key:key
 				});
+			}else{
+				log('no behavior', 'wasNotNull: ', wasNotNull, 'oldWasNotDefault: ', oldWasNotDefault, 'wasNotDefault: ', wasNotDefault);
 			}
-			
 			
 			return value;
 		}

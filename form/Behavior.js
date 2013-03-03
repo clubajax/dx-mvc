@@ -1,7 +1,7 @@
 
 /*
  * Behavior is a mixin that binds model behavior to elements
- * To be mixed in with BindElements
+ * requires BindModel and BindElements
  */
 
 define([
@@ -26,20 +26,11 @@ define([
 		
 	return declare( 'dx-mvc.form.Behavior', null, {
 		
-		postscript: function(){
-			log(' * postscript');
-			if( this.model ){ 
-				this.setModel( this.model );
-			}
-			this.inherited(arguments);
-		},
-		
-		setModel: function(model){
-			log('setModel');
-			this.model = model;
-			this.setModelBehavior();
-			this.setBindings();
-			this.inherited( arguments );
+		constructor: function( props, node ){
+			this.on('setmodel', function(){
+				this.setModelBehavior();
+				this.setBindings();
+			}, this);
 		},
 		
 		setBindings: function(){
@@ -62,12 +53,12 @@ define([
 				pairs = attr.split(/,|;/);
 				pairs.forEach( function( pr ){
 					pair = pr.split( ':' );
-					fn = self[ pair[ 1 ] ] ?
-						lang.bind(self, pair[ 1 ]) :
-						window[ pair[ 1 ] ];
-					on(node, pair[ 0 ], function( evt ){
+					fn = self[ pair[1] ] ?
+						lang.bind( self, pair[1] ) :
+						window[ pair[1] ];
+					self.own(on(node, pair[0], function( evt ){
 						fn(evt);	
-					});
+					}));
 				});
 			});
 		},

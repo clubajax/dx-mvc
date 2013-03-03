@@ -22,13 +22,11 @@
 		require([
 			'doh',
 			'dojo/_base/declare',
-			'dojo/when',
-			'dx-mvc/stores/Store',
 			'dx-mvc/model/Model',
 			'dx-mvc/model/Behavior',
 			'dojo/text!dx-mvc/tests/groceries.json',
 			'dx-alias/log'
-		], function(doh, declare, when, Store, Model, Behavior, groceriesData, logger){
+		], function(doh, declare, Model, Behavior, groceriesData, logger){
 			
 			var log = logger('', 1);
 			var line = logger(' --- ', 1);
@@ -78,16 +76,15 @@
 				},
 		
 				_validators: {
-				//	label:{required:true, min:4, max:12},
-				//	phone:{regexp:/\d{3}[\-\.\\\/]?\d{3}[\-\.\\\/]?\d{4}/},
-				//	amount:{min:4, max:12},
-				//	location:{options:['Kroger', 'Market Street', 'Whole Foods']},
-				//	description:{custom:checkDesc}
+					//	label:{required:true, min:4, max:12},
+					//	phone:{regexp:/\d{3}[\-\.\\\/]?\d{3}[\-\.\\\/]?\d{4}/},
+					//	amount:{min:4, max:12},
+					//	location:{options:['Kroger', 'Market Street', 'Whole Foods']},
+					//	description:{custom:checkDesc}
 				}
 			});
-			store = Store.getObservable({model:ItemModel/*, data:JSON.parse(groceriesData)*/});		
 			
-			var doTests = function(result){
+			var doTests = function(){
 				
 				var logValid = function(item){
 					log('item.isValid()', item.isValid());
@@ -103,7 +100,7 @@
 					
 					'[radios]': function(t){
 						log('RADIOS');
-						var item = store.addModelled({
+						var item = new ItemModel({
 							id:15,
 							label:'food stuff',
 							description:'Mike was here',
@@ -157,13 +154,8 @@
 				
 			};
 			
-			// first get is async
-			when(store.query({}), function(result){
-				// timer breaks out of promise error capture
-				setTimeout(function(){
-					doTests(result)
-				}, 1);
-			});
+			doTests()
+
 					
 			
 		});
