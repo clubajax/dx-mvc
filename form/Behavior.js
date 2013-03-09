@@ -14,7 +14,7 @@ define([
 ], function( declare, on, lang, logger ){
 	
 	var
-		log = logger( 'BV', 1 ),
+		log = logger( 'BV', 0 ),
 		
 		getStyleValue = function( styleProperty, bool ){
 			// convert bool into a proper style value

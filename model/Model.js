@@ -9,7 +9,7 @@ define([
 	
 ], function( declare, Stateful, Evented, when, lang, logger ) {
 	
-	var log = logger('MDL', 1);
+	var log = logger( 'MDL', 0 );
 	
 	var Model = declare( 'dx-mvc.model.Model', [ Stateful, Evented ], {
 		//	summary:
@@ -125,12 +125,7 @@ define([
 			}
 			
 			// emit changes
-			
-			var wasNotNull = oldvalue != null;
-			var wasNotDefault = this._defaults[key] === undefined || this._defaults[key] !== oldvalue;
-			var oldWasNotDefault = oldvalue != this._defaults[key];
-			
-			if( this.initialized ){
+			if( this.initialized && oldvalue !== value ){
 				log('emit', key, value, '(',(typeof oldvalue), oldvalue,')');
 				this.emit('change', {
 					value:value,
@@ -138,7 +133,7 @@ define([
 					key:key
 				});
 			}else{
-				log('no behavior', 'wasNotNull: ', wasNotNull, 'oldWasNotDefault: ', oldWasNotDefault, 'wasNotDefault: ', wasNotDefault);
+				log('no behavior');
 			}
 			
 			return value;

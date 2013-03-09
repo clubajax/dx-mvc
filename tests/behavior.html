@@ -73,42 +73,27 @@
 					disableLabel:{ radio:'labelRadios' },
 					description:{ visible:'showDesc' },
 					label:{ enabled:'enableLabel' }
-				},
-		
-				_validators: {
-					//	label:{required:true, min:4, max:12},
-					//	phone:{regexp:/\d{3}[\-\.\\\/]?\d{3}[\-\.\\\/]?\d{4}/},
-					//	amount:{min:4, max:12},
-					//	location:{options:['Kroger', 'Market Street', 'Whole Foods']},
-					//	description:{custom:checkDesc}
 				}
 			});
 			
+			var item = new ItemModel({
+				id:1,
+				label:'food stuff',
+				description:'Mike was here',
+				hideDesc:false,
+				showDesc:true,
+				enableLabel:true,
+				disableLabel:false
+			});
+
 			var doTests = function(){
 				
-				var logValid = function(item){
-					log('item.isValid()', item.isValid());
-					var e = item.getErrors();
-					if(e){
-						for(var nm in e){
-							log('    ERROR', nm, e[nm]);
-						}
-					}
-				};
 				
 				var tests = {
 					
 					'[radios]': function(t){
 						log('RADIOS');
-						var item = new ItemModel({
-							id:15,
-							label:'food stuff',
-							description:'Mike was here',
-							hideDesc:false,
-							showDesc:true,
-							enableLabel:true,
-							disableLabel:false
-						});
+						
 						
 						var eventCount = 0;
 						var handle1 = item.on('change', function(evt){

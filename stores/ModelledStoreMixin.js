@@ -17,7 +17,7 @@ define([
 			if (!Model) {
 				throw new Error("ModelledStoreMixin does not have a Model class");
 			}
-			var model = new Model(obj);
+			var model = new Model(obj || {});
 			model.store = this;
 			return model;
 		},

@@ -20,7 +20,7 @@ define([
 ], function( declare, on, Model, lang, logger ){
 	
 	var
-		log = logger('BE', 1),
+		log = logger( 'BE', 0 ),
 		
 		isNode = function( node ){
 			return node && typeof node === 'object' && node.nodeType !== undefined;

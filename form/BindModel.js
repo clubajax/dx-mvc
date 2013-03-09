@@ -15,7 +15,7 @@ define([
 	
 ], function( declare, Stateful, lang, Evented, logger ){
 	
-	var log = logger( 'BM', 1 );
+	var log = logger( 'BM', 0 );
 	
 	return declare( 'dx-mvc.form.BindModel', [ Stateful, Evented ], {
 		
